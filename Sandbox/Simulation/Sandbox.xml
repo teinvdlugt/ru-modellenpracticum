@@ -1,0 +1,29 @@
+<CompuCell3D Revision="20200118" Version="4.1.1">
+
+    <Metadata>
+        <!-- Basic properties simulation -->
+        <NumberOfProcessors>1</NumberOfProcessors>
+        <DebugOutputFrequency>10</DebugOutputFrequency>
+        <!-- <NonParallelModule Name="Potts"/> -->
+    </Metadata>
+
+    <Potts>
+        <!-- Basic properties of CPM (GGH) algorithm -->
+        <Dimensions x="200" y="200" z="1"/>
+        <Steps>100000</Steps>
+        <Temperature>10.0</Temperature>
+        <NeighborOrder>1</NeighborOrder>
+    </Potts>
+
+    <Plugin Name="CellType">
+        <!-- Listing all cell types in the simulation -->
+        <CellType TypeId="0" TypeName="Medium"/>
+        <CellType Freeze="" TypeId="1" TypeName="Collagen"/>
+        <CellType Freeze="" TypeId="2" TypeName="Tumor"/>
+    </Plugin>
+
+    <Steppable Type="PIFInitializer">
+        <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGenerator -->
+        <PIFName>Simulation/collagen+tumoroid2d.piff</PIFName>
+    </Steppable>
+</CompuCell3D>

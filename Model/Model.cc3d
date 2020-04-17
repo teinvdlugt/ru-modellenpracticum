@@ -1,0 +1,6 @@
+<Simulation version="4.1.1">
+   <XMLScript Type="XMLScript">Simulation/Model.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/Model.py</PythonScript>
+   <Resource Type="Python">Simulation/ModelSteppables.py</Resource>
+   <PIFFile>Simulation/collagen2d.piff</PIFFile>
+</Simulation>

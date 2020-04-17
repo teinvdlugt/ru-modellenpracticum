@@ -1,0 +1,64 @@
+<CompuCell3D Revision="20200118" Version="4.1.1">
+
+    <Metadata>
+        <!-- Basic properties simulation -->
+        <NumberOfProcessors>1</NumberOfProcessors>
+        <DebugOutputFrequency>10</DebugOutputFrequency>
+        <!-- <NonParallelModule Name="Potts"/> -->
+    </Metadata>
+
+    <Potts>
+        <!-- Basic properties of Potts model -->
+        <Dimensions x="200" y="200" z="1"/>
+        <Steps>10000</Steps>
+        <NeighborOrder>1</NeighborOrder>
+        <Boundary_x>Periodic</Boundary_x>
+        <Boundary_z>Periodic</Boundary_z>
+
+        <!-- The temperature: -->
+        <FluctuationAmplitude>
+            <FluctuationAmplitudeParameters CellType="Tumor" FluctuationAmplitude="15"/>
+            <FluctuationAmplitudeParameters CellType="Collagen" FluctuationAmplitude="0"/>
+        </FluctuationAmplitude>
+    </Potts>
+
+    <Plugin Name="CellType">
+        <!-- Listing all cell types in the simulation -->
+        <CellType TypeId="0" TypeName="Medium"/>
+        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- set to 'Freeze' to disable proteolysis -->
+        <CellType TypeId="2" TypeName="Tumor"/>
+    </Plugin>
+
+    <Plugin Name="Volume" /> <!-- Parameters set in Python steppable -->
+
+    <!-- Watch what happens when you uncomment this: -->
+    <!--<Plugin Name="Surface">
+        <SurfaceEnergyParameters CellType="Collagen" LambdaSurface="11" TargetSurface="22"/>
+        <SurfaceEnergyParameters CellType="Tumor" LambdaSurface="0.8" TargetSurface="28.4"/> &lt;!&ndash; 2pi*sqrt(64/pi) &ndash;&gt;
+    </Plugin>-->
+
+    <Plugin Name="Contact">
+        <!-- Specification of adhesion energies -->
+        <!-- From Scianna et al.: -->
+        <Energy Type1="Tumor" Type2="Medium">6.5</Energy>
+        <Energy Type1="Tumor" Type2="Collagen">4.5</Energy>
+        <Energy Type1="Tumor" Type2="Tumor">12.0</Energy>
+
+        <!-- I don't know what Scianna et al. do with these. -->
+        <!-- Let's make them high so the adhesion is weak -->
+        <Energy Type1="Medium" Type2="Medium">20.0</Energy>
+        <Energy Type1="Medium" Type2="Collagen">20.0</Energy>
+        <Energy Type1="Collagen" Type2="Collagen">20.0</Energy>
+        <NeighborOrder>4</NeighborOrder>  <!-- Todo Or 2 or what? See Introduction to CompuCell3D 3.7.4, p12 -->
+    </Plugin>
+
+    <Steppable Type="PIFInitializer">
+        <!-- Initial layout of cells using PIFF file. -->
+        <PIFName>Simulation/collagen+tumoroid2d.piff</PIFName>
+    </Steppable>
+
+    <!--Not necessary for now-->
+    <!--<Plugin Name="CenterOfMass">
+        &lt;!&ndash; Module tracking center of mass of each cell &ndash;&gt;
+    </Plugin>-->
+</CompuCell3D>

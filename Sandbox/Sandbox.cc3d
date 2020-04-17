@@ -1,0 +1,6 @@
+<Simulation version="4.1.1">
+   <XMLScript Type="XMLScript">Simulation/Sandbox.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/Sandbox.py</PythonScript>
+   <Resource Type="Python">Simulation/SandboxSteppables.py</Resource>
+   <PIFFile>Simulation/collagen2d.piff</PIFFile>
+</Simulation>
