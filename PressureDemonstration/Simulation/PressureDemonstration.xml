@@ -1,0 +1,43 @@
+<CompuCell3D Revision="20200118" Version="4.1.1">
+
+    <Metadata>
+        <!-- Basic properties simulation -->
+        <NumberOfProcessors>1</NumberOfProcessors>
+        <DebugOutputFrequency>10</DebugOutputFrequency>
+        <!-- <NonParallelModule Name="Potts"/> -->
+    </Metadata>
+
+    <Potts>
+        <!-- Basic properties of CPM (GGH) algorithm -->
+        <Dimensions x="50" y="50" z="1"/>
+        <Steps>10000</Steps>
+        <Temperature>1</Temperature>
+        <NeighborOrder>1</NeighborOrder>
+    </Potts>
+
+    <Plugin Name="Contact">
+        <Energy Type1="Lower" Type2="Lower">1</Energy>
+        <Energy Type1="Upper" Type2="Upper">1</Energy>
+        <NeighborOrder>4</NeighborOrder>
+    </Plugin>
+    
+    <Plugin Name="Surface">
+        <SurfaceEnergyParameters CellType="Lower" LambdaSurface="0" TargetSurface="40"/>
+        <SurfaceEnergyParameters CellType="Upper" LambdaSurface="0" TargetSurface="40"/>
+    </Plugin>
+
+
+    <Plugin Name="CellType">
+        <!-- Listing all cell types in the simulation -->
+        <CellType TypeId="0" TypeName="Medium"/>
+        <CellType TypeId="1" TypeName="Lower"/>
+        <CellType TypeId="2" TypeName="Upper"/>
+        <CellType Freeze="" TypeId="3" TypeName="Wall"/>
+    </Plugin>
+
+    <Plugin Name="Volume"/>
+
+    <Steppable Type="PIFInitializer">
+        <PIFName>Simulation/PressureDemonstration.piff</PIFName>
+    </Steppable>
+</CompuCell3D>
