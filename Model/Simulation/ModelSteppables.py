@@ -1,15 +1,15 @@
 from cc3d.core.PySteppables import *
 
 # Collagen parameters
-collagen_length = 10
+collagen_length = 100
 collagen_thickness = 1
 
 # Volume, growth and mitosis parameters
 tumor_initial_volume = 64.0  # must agree with PIF file
 tumor_growth_rate = 0.05  # per MCS -- keep this a float
 tumor_lambda_volume = 10.0  # from Scianna et al.
-mitosis_threshold = 100  # cell divides if volume > mitosis_threshold
-volume_steppable_frequency = 10  # Maybe change this frequency. I have set it to 10 to reduce computation
+mitosis_threshold = 1000  # cell divides if volume > mitosis_threshold
+volume_steppable_frequency = 20  # Maybe change this frequency. I have set it to 10 to reduce computation
 
 collagen_lambda_volume = 11.0  # from Scianna et al.
 
@@ -34,6 +34,7 @@ class VolumeSteppable(SteppableBasePy):
             if cell.type == self.TUMOR:
                 cell.targetVolume = tumor_initial_volume
                 cell.lambdaVolume = tumor_lambda_volume
+                
             if cell.type == self.COLLAGEN:
                 cell.targetVolume = collagen_length * collagen_thickness
                 cell.lambdaVolume = collagen_lambda_volume
@@ -41,7 +42,9 @@ class VolumeSteppable(SteppableBasePy):
     def step(self, mcs):
         for cell in self.cell_list:
             if cell.type == self.TUMOR:
-                cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
+                cell.targetSurface = 300
+                print("cell.surface=",cell.surface)
+                #cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
 
 
 class MitosisSteppable(MitosisSteppableBase):
