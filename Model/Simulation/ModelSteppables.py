@@ -8,7 +8,7 @@ collagen_thickness = 1
 # Volume, growth and mitosis parameters
 tumor_initial_volume = 64.0  # must agree with PIF file
 tumor_lambda_volume = 10.0  # from Scianna et al.
-tumor_initial_surface = 36.0    #This stems from the relation between the volume and the surface of a voxel sphere, ie
+tumor_initial_surface = 8*sqrt(tumor_initial_volume/3.1416)    #This stems from the relation between the volume and the surface of a voxel sphere, ie
                                 #vol = pi r^2, surface = 8 * sqrt(vol/pi)
 tumor_lambda_surface = 1.0
 

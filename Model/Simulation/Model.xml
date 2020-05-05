@@ -53,29 +53,39 @@
     <!-- The constants for the catepillar (CPT field) movement are ofcourse a bit finetuned, feel free to play with them -->
     
     <Plugin Name="Chemotaxis">
-        <ChemicalField Name="CTP" Source="FlexibleDiffusionSolverFE">
-            <ChemotaxisByType Lambda="200.0" Type="Tumor"/>
+        <ChemicalField Name="CTP" Source="DiffusionSolverFE">
+            <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
      </Plugin>
 
-     <Plugin Name="Secretion">
-        <Field Name="CTP">
-        <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.03</SecretionOnContact> 
-        </Field>
-     </Plugin>
-
-    <Steppable Type="FlexibleDiffusionSolverFE">
-        <DiffusionField>
+    <Steppable Type="DiffusionSolverFE">
+        <DiffusionField Name="CTP">
             <DiffusionData>
                 <FieldName>CTP</FieldName>
-                <DiffusionConstant>0.01</DiffusionConstant>
-                <DecayConstant>0.03</DecayConstant>
-                <DoNotDecayIn>Tumor</DoNotDecayIn>
-                <DoNotDiffuseTo>Medium</DoNotDiffuseTo>
+                <GlobalDiffusionConstant>0.00</GlobalDiffusionConstant>
+                <GlobalDecayConstant>0.00</GlobalDecayConstant>
+                
+                <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
+                <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Tumor">0.005</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
+                
+                <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
+                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
+                <DecayCoefficient CellType="Medium">0.005</DecayCoefficient>
+                
+                <!--DoNotDecayIn>Tumor</DoNotDecayIn>
+                <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
+                
             </DiffusionData>
+            
+            <SecretionData>
+                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.1</SecretionOnContact>
+            </SecretionData>
         </DiffusionField>
     </Steppable>
 
+    
     <!--Not necessary for now-->
     <!--<Plugin Name="CenterOfMass">
         &lt;!&ndash; Module tracking center of mass of each cell &ndash;&gt;
