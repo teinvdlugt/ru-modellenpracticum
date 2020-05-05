@@ -30,11 +30,7 @@
 
     <Plugin Name="Volume" /> <!-- Parameters set in Python steppable -->
 
-    <!-- Watch what happens when you uncomment this: -->
-    <Plugin Name="Surface">
-        <SurfaceEnergyParameters CellType="Collagen" LambdaSurface="11" TargetSurface="22"/>
-        <SurfaceEnergyParameters CellType="Tumor" LambdaSurface="1" TargetSurface="36"/>
-    </Plugin>
+    <Plugin Name="Surface" /> <!-- Parameters in python steppable only work when your call the plugin like this -->
     
     <Plugin Name="Contact">
         <Energy Type1="Tumor" Type2="Medium">6.5</Energy>
@@ -54,6 +50,8 @@
         <PIFName>Simulation/collagen_single2d.piff</PIFName>
     </Steppable>
     
+    <!-- The constants for the catepillar (CPT field) movement are ofcourse a bit finetuned, feel free to play with them -->
+    
     <Plugin Name="Chemotaxis">
         <ChemicalField Name="CTP" Source="FlexibleDiffusionSolverFE">
             <ChemotaxisByType Lambda="200.0" Type="Tumor"/>
@@ -70,7 +68,7 @@
         <DiffusionField>
             <DiffusionData>
                 <FieldName>CTP</FieldName>
-                <DiffusionConstant>0.001</DiffusionConstant>
+                <DiffusionConstant>0.01</DiffusionConstant>
                 <DecayConstant>0.03</DecayConstant>
                 <DoNotDecayIn>Tumor</DoNotDecayIn>
                 <DoNotDiffuseTo>Medium</DoNotDiffuseTo>
