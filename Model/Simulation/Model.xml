@@ -1,11 +1,14 @@
 <CompuCell3D Revision="20200118" Version="4.1.1">
 
+    <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
+
     <Metadata>
-        <!-- Basic properties simulation -->
         <NumberOfProcessors>1</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
+
+    <!-- ____________________________MODEL PARAMETERS____________________________ -->
 
     <Potts>
         <!-- Basic properties of Potts model -->
@@ -13,8 +16,9 @@
         <Steps>10000</Steps>
         <NeighborOrder>1</NeighborOrder>
         <Boundary_x>Periodic</Boundary_x>
+        <!--<Boundary_y>Periodic</Boundary_y> TODO-->
 
-        <!-- The temperature: -->
+        <!-- The temperature, aka fluctuation amplitude: -->
         <FluctuationAmplitude>
             <FluctuationAmplitudeParameters CellType="Tumor" FluctuationAmplitude="15"/>
             <FluctuationAmplitudeParameters CellType="Collagen" FluctuationAmplitude="0"/>
@@ -28,11 +32,14 @@
         <CellType TypeId="2" TypeName="Tumor"/>
     </Plugin>
 
-    <Plugin Name="Volume" /> <!-- Parameters set in Python steppable -->
+    <Plugin Name="Volume"/> <!-- Parameters set in Python steppable -->
 
-    <Plugin Name="Surface" /> <!-- Parameters in python steppable only work when your call the plugin like this -->
-    
+    <Plugin Name="Surface"/> <!-- Parameters in python steppable only work when your call the plugin like this -->
+
+    <!-- ____________________________ADHESION____________________________ -->
+
     <Plugin Name="Contact">
+        <!-- The following values are from Scianna et al.: TM 6.5, TC 4.5, TT 12.0 -->
         <Energy Type1="Tumor" Type2="Medium">6.5</Energy>
         <Energy Type1="Tumor" Type2="Collagen">4.5</Energy>
         <Energy Type1="Tumor" Type2="Tumor">10.0</Energy>
@@ -45,18 +52,14 @@
         <NeighborOrder>4</NeighborOrder>
     </Plugin>
 
-    <Steppable Type="PIFInitializer">
-        <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>Simulation/collagen_single2d.piff</PIFName>
-    </Steppable>
-    
-    <!-- The constants for the catepillar (CPT field) movement are ofcourse a bit finetuned, feel free to play with them -->
-    
-    <Plugin Name="Chemotaxis">
+    <!-- ____________________________CATERPILLAR EFFECT____________________________ -->
+
+    <!-- The constants for the caterpillar (CPT field) movement are of course a bit finetuned, feel free to play with them -->
+    <!--<Plugin Name="Chemotaxis">
         <ChemicalField Name="CTP" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
-     </Plugin>
+    </Plugin>
 
     <Steppable Type="DiffusionSolverFE">
         <DiffusionField Name="CTP">
@@ -64,28 +67,35 @@
                 <FieldName>CTP</FieldName>
                 <GlobalDiffusionConstant>0.00</GlobalDiffusionConstant>
                 <GlobalDecayConstant>0.00</GlobalDecayConstant>
-                
+
                 <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
                 <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
                 <DiffusionCoefficient CellType="Tumor">0.005</DiffusionCoefficient>
                 <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
-                
+
                 <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
                 <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
                 <DecayCoefficient CellType="Medium">0.005</DecayCoefficient>
-                
-                <!--DoNotDecayIn>Tumor</DoNotDecayIn>
-                <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
-                
+
+                &lt;!&ndash;DoNotDecayIn>Tumor</DoNotDecayIn>
+                <DoNotDiffuseTo>Medium</DoNotDiffuseTo&ndash;&gt;
+
             </DiffusionData>
-            
+
             <SecretionData>
                 <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.1</SecretionOnContact>
             </SecretionData>
         </DiffusionField>
+    </Steppable>-->
+
+
+    <!-- ____________________________INITIAL CONDITION____________________________ -->
+
+    <Steppable Type="PIFInitializer">
+        <!-- Initial layout of cells using PIFF file. -->
+        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>
     </Steppable>
 
-    
     <!--Not necessary for now-->
     <!--<Plugin Name="CenterOfMass">
         &lt;!&ndash; Module tracking center of mass of each cell &ndash;&gt;

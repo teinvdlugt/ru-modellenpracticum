@@ -5,24 +5,28 @@ import math
 collagen_length = 100
 collagen_thickness = 1
 
-# Volume, growth and mitosis parameters
+# Volume, surface, growth and mitosis parameters
 tumor_initial_volume = 64.0  # must agree with PIF file
 tumor_lambda_volume = 10.0  # from Scianna et al.
-tumor_initial_surface = 8*sqrt(tumor_initial_volume/3.1416)    #This stems from the relation between the volume and the surface of a voxel sphere, ie
-                                #vol = pi r^2, surface = 8 * sqrt(vol/pi)
-tumor_lambda_surface = 1.0
+tumor_initial_surface = 8 * sqrt(tumor_initial_volume / math.pi)  # See also volume_to_surface function
+tumor_lambda_surface = 1.0  # TODO what does Scianna say?
 
-tumor_growth_rate = 0.05  # per MCS -- keep this a float
+tumor_growth_rate = 0.05  # per MCS -- be sure to keep this a float
 
-
-mitosis_threshold = 2*tumor_initial_volume  # cell divides if volume > mitosis_threshold
+mitosis_threshold = 2 * tumor_initial_volume  # cell divides if volume > mitosis_threshold
 volume_steppable_frequency = 20  # Maybe change this frequency. I have set it to 10 to reduce computation
 
 collagen_lambda_volume = 11.0  # from Scianna et al.
 
 
-class InitialiserSteppable(SteppableBasePy):
+_8oversqrtpi = 8 / sqrt(math.pi)
+def volume_to_surface(volume):
+    """ Calculates surface of a pixelated sphere having the specified volume.
+        This stems from: vol = pi r^2, surface = 8 * r = 8 * sqrt(vol/pi). """
+    return _8oversqrtpi * sqrt(volume)
 
+
+class InitialiserSteppable(SteppableBasePy):
     def __init__(self, frequency=1):
         SteppableBasePy.__init__(self, frequency)
 
@@ -43,7 +47,7 @@ class VolumeSurfaceSteppable(SteppableBasePy):
                 cell.lambdaVolume = tumor_lambda_volume
                 cell.targetSurface = tumor_initial_surface
                 cell.lambdaSurface = tumor_lambda_surface
-                
+
             if cell.type == self.COLLAGEN:
                 cell.targetVolume = collagen_length * collagen_thickness
                 cell.lambdaVolume = collagen_lambda_volume
@@ -52,7 +56,7 @@ class VolumeSurfaceSteppable(SteppableBasePy):
         for cell in self.cell_list:
             if cell.type == self.TUMOR:
                 cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
-                cell.targetSurface = 4.5 * math.sqrt(cell.targetVolume) #The 4.5 \approx 8/sqrt(pi)
+                cell.targetSurface = volume_to_surface(cell.targetVolume)
 
 
 class MitosisSteppable(MitosisSteppableBase):
@@ -74,5 +78,5 @@ class MitosisSteppable(MitosisSteppableBase):
         # Called after mitosis has occurred.
         # Set new target volumes:
         self.parent_cell.targetVolume /= 2.0
-        self.parent_cell.targetSurface = 4.5 * math.sqrt(self.parent_cell.targetVolume)
+        self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
