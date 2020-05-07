@@ -28,11 +28,13 @@
     <Plugin Name="CellType">
         <!-- Listing all cell types in the simulation -->
         <CellType TypeId="0" TypeName="Medium"/>
-        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- set to 'Freeze' to disable proteolysis -->
+        <CellType TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
         <CellType TypeId="2" TypeName="Tumor"/>
     </Plugin>
 
     <Plugin Name="Volume"/> <!-- Parameters set in Python steppable -->
+
+    <Plugin Name="VolumeTracker"/>
 
     <Plugin Name="Surface"/> <!-- Parameters in python steppable only work when your call the plugin like this -->
 

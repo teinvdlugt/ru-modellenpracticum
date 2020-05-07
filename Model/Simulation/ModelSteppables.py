@@ -1,22 +1,20 @@
 from cc3d.core.PySteppables import *
 import math
 
-# Collagen parameters
-collagen_length = 100
-collagen_thickness = 1
 
 # Volume, surface, growth and mitosis parameters
-tumor_initial_volume = 64.0  # must agree with PIF file
+# tumor_initial_volume = 64.0  # Is now automatically set from PIF file, see InitialiserSteppable
 tumor_lambda_volume = 10.0  # from Scianna et al.
-tumor_initial_surface = 8 * sqrt(tumor_initial_volume / math.pi)  # See also volume_to_surface function
+# tumor_initial_surface = 8 * sqrt(tumor_initial_volume / math.pi)  # See also volume_to_surface function
 tumor_lambda_surface = 1.0  # TODO what does Scianna say?
-
 tumor_growth_rate = 0.05  # per MCS -- be sure to keep this a float
 
+tumor_initial_volume = 64.0
 mitosis_threshold = 2 * tumor_initial_volume  # cell divides if volume > mitosis_threshold
 volume_steppable_frequency = 20  # Maybe change this frequency. I have set it to 10 to reduce computation
 
-collagen_lambda_volume = 11.0  # from Scianna et al.
+# Proteolysis parameters
+collagen_lambda_volume = 100.0  # The lower(?) this value, the easier proteolysis. In Scianna et al.: 11.0
 
 
 _8oversqrtpi = 8 / sqrt(math.pi)
@@ -43,15 +41,16 @@ class VolumeSurfaceSteppable(SteppableBasePy):
         # Initialise cell volumes
         for cell in self.cellList:
             if cell.type == self.TUMOR:
-                cell.targetVolume = tumor_initial_volume
+                cell.targetVolume = cell.volume  # Set targetVolume equal to actual volume of initial condition
                 cell.lambdaVolume = tumor_lambda_volume
-                cell.targetSurface = tumor_initial_surface
+                cell.targetSurface = volume_to_surface(cell.targetVolume)
                 cell.lambdaSurface = tumor_lambda_surface
 
             if cell.type == self.COLLAGEN:
-                cell.targetVolume = collagen_length * collagen_thickness
+                cell.targetVolume = cell.volume  # collagen_length * collagen_thickness
                 cell.lambdaVolume = collagen_lambda_volume
 
+    # Growth:
     def step(self, mcs):
         for cell in self.cell_list:
             if cell.type == self.TUMOR:
@@ -80,3 +79,15 @@ class MitosisSteppable(MitosisSteppableBase):
         self.parent_cell.targetVolume /= 2.0
         self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
+
+
+# The following steppable makes sure that collagen targetVolume is always the same as its actual volume,
+# to make sure that the collagen is really eaten and cannot 'grow back'.
+class ProteolysisSteppable(SteppableBasePy):
+    def __init__(self, frequency=1):
+        SteppableBasePy.__init__(self, frequency)
+
+    def step(self, mcs):
+        for cell in self.cell_list:
+            if cell.cell_type == self.COLLAGEN:
+                cell.targetVolume = cell.volume
