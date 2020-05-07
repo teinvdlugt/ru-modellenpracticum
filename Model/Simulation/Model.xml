@@ -88,12 +88,33 @@
         </DiffusionField>
     </Steppable>-->
 
+    <Steppable Type="DiffusionSolverFE">
+        <DiffusionField Name="MMP">
+            <DiffusionData>
+                <FieldName>MMP</FieldName>
+                <GlobalDiffusionConstant>0.01</GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
+                <GlobalDecayConstant>1e-02</GlobalDecayConstant>
+            </DiffusionData>
+            <!--<BoundaryConditions>
+               <Plane Axis="X">
+                  <ConstantValue PlanePosition="Min" Value="10.0"/>
+                  <ConstantValue PlanePosition="Max" Value="5.0"/>
+               </Plane>
+               <Plane Axis="Y">
+                  <ConstantDerivative PlanePosition="Min" Value="10.0"/>
+                  <ConstantDerivative PlanePosition="Max" Value="5.0"/>
+               </Plane>
+            </BoundaryConditions> TODO maybe add bcs-->
+        </DiffusionField>
+    </Steppable>
+
+    <Plugin Name="Secretion"/>
 
     <!-- ____________________________INITIAL CONDITION____________________________ -->
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>
+        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
     </Steppable>
 
     <!--Not necessary for now-->

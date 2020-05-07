@@ -18,8 +18,9 @@ volume_steppable_frequency = 20  # Maybe change this frequency. I have set it to
 
 collagen_lambda_volume = 11.0  # from Scianna et al.
 
-
 _8oversqrtpi = 8 / sqrt(math.pi)
+
+
 def volume_to_surface(volume):
     """ Calculates surface of a pixelated sphere having the specified volume.
         This stems from: vol = pi r^2, surface = 8 * r = 8 * sqrt(vol/pi). """
@@ -43,6 +44,7 @@ class VolumeSurfaceSteppable(SteppableBasePy):
         # Initialise cell volumes
         for cell in self.cellList:
             if cell.type == self.TUMOR:
+                print(cell.volume)
                 cell.targetVolume = tumor_initial_volume
                 cell.lambdaVolume = tumor_lambda_volume
                 cell.targetSurface = tumor_initial_surface
@@ -80,3 +82,42 @@ class MitosisSteppable(MitosisSteppableBase):
         self.parent_cell.targetVolume /= 2.0
         self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
+
+
+class MMPSecretionSteppable(SecretionBasePy):
+    # Docs: https://compucell3dreferencemanual.readthedocs.io/en/latest/secretion.html
+    def __init__(self, frequency=1):
+        SecretionBasePy.__init__(self, frequency)
+
+    def step(self, mcs):
+        secretor = self.get_field_secretor("MMP")
+        for cell in self.cell_list:
+            if cell.type == self.TUMOR:
+                # Secretion rate depends on cell confinement
+                confinement_energy = tumor_lambda_volume * (cell.targetVolume - cell.volume) ** 2 \
+                                     + tumor_lambda_surface * (cell.targetSurface - cell.surface) ** 2
+                secr_rate = confinement_energy * 1e-4
+                secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
+
+
+class MMPDegradationSteppable(SteppableBasePy):
+    def __init__(self, frequency=1):
+        SteppableBasePy.__init__(self, frequency)
+
+    def start(self):
+        # Find medium cell object (to replace collagen pixels with)  # TODO only once?
+        for cell in self.cell_list:
+            if cell.type == self.MEDIUM:
+                self.medium_cell = cell
+                break
+
+    def step(self, mcs):
+        mmp = CompuCell.getConcentrationField(self.simulator, "MMP")
+
+        for cell in self.cell_list_by_type(self.COLLAGEN):
+            for pixel in self.get_copy_of_cell_pixels(cell):
+                if mmp.get(pixel) >= 1:
+                    # Replace Collagen by Medium:
+                    self.cell_field[pixel.x, pixel.y, pixel.z] = self.medium_cell
+                    # Remove MMP:
+                    mmp.set(pixel, 0)
