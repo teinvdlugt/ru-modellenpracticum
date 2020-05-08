@@ -23,7 +23,7 @@
 
     <Plugin Name="Volume"/>
 
-    <Plugin Name="Contact"> <!--TODO it seems they made no distinction in adhesion properties-->
+    <Plugin Name="Contact">
         <!-- Specification of adhesion energies -->
         <Energy Type1="Medium" Type2="Medium">15.0</Energy>
         <Energy Type1="Medium" Type2="Cell">15.0</Energy>
@@ -126,7 +126,7 @@
 
     <!--<Plugin Name="CenterOfMass">-->
     <!--&lt;!&ndash; Module tracking center of mass of each cell &ndash;&gt;-->
-    <!--&lt;!&ndash; TODO necessary? -->
+    <!--&lt;!&ndash; -->
     <!--</Plugin>-->
 
     <Steppable Type="BlobInitializer">

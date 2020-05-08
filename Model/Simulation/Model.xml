@@ -3,7 +3,7 @@
     <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
 
     <Metadata>
-        <NumberOfProcessors>1</NumberOfProcessors>
+        <NumberOfProcessors>3</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
@@ -12,11 +12,13 @@
 
     <Potts>
         <!-- Basic properties of Potts model -->
-        <Dimensions x="200" y="200" z="1"/>
+        <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
+        <!--<Dimensions x="200" y="200" z="200"/>-->  <!-- FOR 3D -->
         <Steps>10000</Steps>
         <NeighborOrder>1</NeighborOrder>
         <Boundary_x>Periodic</Boundary_x>
-        <!--<Boundary_y>Periodic</Boundary_y> TODO-->
+        <Boundary_y>Periodic</Boundary_y>
+        <!--<Boundary_z>Periodic</Boundary_z>--> <!-- FOR 2D: comment out-->
 
         <!-- The temperature, aka fluctuation amplitude: -->
         <FluctuationAmplitude>
@@ -28,7 +30,7 @@
     <Plugin Name="CellType">
         <!-- Listing all cell types in the simulation -->
         <CellType TypeId="0" TypeName="Medium"/>
-        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- set to 'Freeze' to disable proteolysis -->
+        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
         <CellType TypeId="2" TypeName="Tumor"/>
     </Plugin>
 
@@ -55,7 +57,7 @@
     <!-- ____________________________CATERPILLAR EFFECT____________________________ -->
 
     <!-- The constants for the caterpillar (CPT field) movement are of course a bit finetuned, feel free to play with them -->
-    <!--<Plugin Name="Chemotaxis">
+    <Plugin Name="Chemotaxis">
         <ChemicalField Name="CTP" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
@@ -77,27 +79,21 @@
                 <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
                 <DecayCoefficient CellType="Medium">0.005</DecayCoefficient>
 
-                &lt;!&ndash;DoNotDecayIn>Tumor</DoNotDecayIn>
-                <DoNotDiffuseTo>Medium</DoNotDiffuseTo&ndash;&gt;
-
+                <!--DoNotDecayIn>Tumor</DoNotDecayIn>
+                <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
             </DiffusionData>
 
             <SecretionData>
                 <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.1</SecretionOnContact>
             </SecretionData>
         </DiffusionField>
-    </Steppable>-->
-
+    </Steppable>
 
     <!-- ____________________________INITIAL CONDITION____________________________ -->
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>
+        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>   <!--FOR 2D-->
+        <!--<PIFName>PIF files/3D/collagen+cell3d.piff</PIFName>-->  <!--FOR 3D-->
     </Steppable>
-
-    <!--Not necessary for now-->
-    <!--<Plugin Name="CenterOfMass">
-        &lt;!&ndash; Module tracking center of mass of each cell &ndash;&gt;
-    </Plugin>-->
 </CompuCell3D>

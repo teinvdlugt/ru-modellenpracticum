@@ -21,8 +21,8 @@ with open(file_output, 'a+') as f:
     for x in range(cluster_center - cluster_radius, cluster_center + cluster_radius - cell_width, cell_width):
         for y in range(cluster_center - cluster_radius, cluster_center + cluster_radius - cell_width, cell_width):
             # Calculate center of mass
-            com_x = x + cell_width / 2
-            com_y = y + cell_width / 2
+            com_x = x + cell_width / 2.
+            com_y = y + cell_width / 2.
             # Check if COM is within cluster radius
             if sqrt((com_x - cluster_center) ** 2 + (com_y - cluster_center) ** 2) > cluster_radius:
                 continue

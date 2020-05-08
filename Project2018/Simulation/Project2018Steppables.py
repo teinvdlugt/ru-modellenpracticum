@@ -32,7 +32,7 @@ class MitosisSteppable(MitosisSteppableBase):
         for cell in cells_to_divide:
             self.divide_cell_random_orientation(cell)
 
-    def updateAttributes(self):  # todo is this called?
+    def updateAttributes(self):
         self.parentCell.targetVolume /= 2.0  # reducing parent target volume
         self.cloneParent2Child()
 
