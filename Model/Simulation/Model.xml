@@ -55,7 +55,7 @@
     <!-- ____________________________CATERPILLAR EFFECT____________________________ -->
 
     <!-- The constants for the caterpillar (CPT field) movement are of course a bit finetuned, feel free to play with them -->
-    <!--<Plugin Name="Chemotaxis">
+    <Plugin Name="Chemotaxis">
         <ChemicalField Name="CTP" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
@@ -70,30 +70,32 @@
 
                 <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
                 <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
-                <DiffusionCoefficient CellType="Tumor">0.005</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Tumor">5e-04</DiffusionCoefficient>
                 <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
 
                 <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
                 <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
-                <DecayCoefficient CellType="Medium">0.005</DecayCoefficient>
+                <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
 
-                &lt;!&ndash;DoNotDecayIn>Tumor</DoNotDecayIn>
-                <DoNotDiffuseTo>Medium</DoNotDiffuseTo&ndash;&gt;
+                <!--DoNotDecayIn>Tumor</DoNotDecayIn>
+                <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
 
             </DiffusionData>
 
             <SecretionData>
-                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.1</SecretionOnContact>
+                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.03</SecretionOnContact>
             </SecretionData>
         </DiffusionField>
-    </Steppable>-->
-
-    <Steppable Type="DiffusionSolverFE">
+        
+        <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
+        
         <DiffusionField Name="MMP">
             <DiffusionData>
                 <FieldName>MMP</FieldName>
-                <GlobalDiffusionConstant>0.01</GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
-                <GlobalDecayConstant>1e-02</GlobalDecayConstant>
+                <GlobalDiffusionConstant>1.6e-03</GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
+                <GlobalDecayConstant>2e-04</GlobalDecayConstant>
+                <!-- Maybe add cell-specific decay and diffusion constants? -->
+                
             </DiffusionData>
             <!--<BoundaryConditions>
                <Plane Axis="X">
@@ -108,13 +110,16 @@
         </DiffusionField>
     </Steppable>
 
-    <Plugin Name="Secretion"/>
 
+    <Plugin Name="Secretion"/>
+    
+    <Plugin Name="NeighborTracker"/> <!-- Needed for contact_area calculations -->
+    
     <!-- ____________________________INITIAL CONDITION____________________________ -->
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
+        <PIFName>PIF files/testing proteolysis/collagenstrands.piff</PIFName>
     </Steppable>
 
     <!--Not necessary for now-->

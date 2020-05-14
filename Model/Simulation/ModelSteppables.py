@@ -9,14 +9,17 @@ collagen_thickness = 1
 tumor_initial_volume = 64.0  # must agree with PIF file
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_initial_surface = 8 * sqrt(tumor_initial_volume / math.pi)  # See also volume_to_surface function
-tumor_lambda_surface = 1.0  # TODO what does Scianna say?
+tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 
-tumor_growth_rate = 0.05  # per MCS -- be sure to keep this a float
+tumor_growth_rate = 0.10  # per MCS -- be sure to keep this a float
 
 mitosis_threshold = 2 * tumor_initial_volume  # cell divides if volume > mitosis_threshold
 volume_steppable_frequency = 20  # Maybe change this frequency. I have set it to 10 to reduce computation
+mmpdegradation_steppable_frequency = 10 # mmpdegradation turns out te be extremely expensive
 
 collagen_lambda_volume = 11.0  # from Scianna et al.
+
+mmp_offset = 50 # The amount of mmp constantly secreted
 
 _8oversqrtpi = 8 / sqrt(math.pi)
 
@@ -93,15 +96,30 @@ class MMPSecretionSteppable(SecretionBasePy):
         secretor = self.get_field_secretor("MMP")
         for cell in self.cell_list:
             if cell.type == self.TUMOR:
+                
+                # This calculates the contact area of the tumor and collagen cells
+                # TODO: Need to discuss if this code is worth the cost.
+                contact_area = 0
+                for (c_cell,area) in self.get_cell_neighbor_data_list(cell):
+                    if c_cell.type == self.COLLAGEN:
+                        contact_area = area
+                        
                 # Secretion rate depends on cell confinement
-                confinement_energy = tumor_lambda_volume * (cell.targetVolume - cell.volume) ** 2 \
-                                     + tumor_lambda_surface * (cell.targetSurface - cell.surface) ** 2
-                secr_rate = confinement_energy * 1e-4
+                delta_volume = cell.targetVolume - cell.volume
+                #delta_surface = cell.targetSurface - cell.surface
+                delta_surface = 0 # I think we decided on leaving out the surface term in the secretion of the mmp field
+                delta_volume = 0 if delta_volume < 0 else delta_volume
+                delta_surface = 0 if delta_surface < 0 else delta_surface
+                
+                confinement_energy = tumor_lambda_volume * delta_volume ** 2 \
+                                     + tumor_lambda_surface * delta_surface ** 2 # Why should this be quadratic?
+                
+                secr_rate = (confinement_energy+mmp_offset) * sqrt(contact_area) * 2e-5 # How should secretion rate depend on contact area?
                 secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
 
 
 class MMPDegradationSteppable(SteppableBasePy):
-    def __init__(self, frequency=1):
+    def __init__(self, frequency=mmpdegradation_steppable_frequency):
         SteppableBasePy.__init__(self, frequency)
 
     def start(self):
@@ -112,11 +130,12 @@ class MMPDegradationSteppable(SteppableBasePy):
                 break
 
     def step(self, mcs):
+        
         mmp = CompuCell.getConcentrationField(self.simulator, "MMP")
 
         for cell in self.cell_list_by_type(self.COLLAGEN):
             for pixel in self.get_copy_of_cell_pixels(cell):
-                if mmp.get(pixel) >= 1:
+                if mmp.get(pixel) >= 1: # Maybe add some stochastic factor into this?
                     # Replace Collagen by Medium:
                     self.cell_field[pixel.x, pixel.y, pixel.z] = self.medium_cell
                     # Remove MMP:
