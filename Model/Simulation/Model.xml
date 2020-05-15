@@ -113,13 +113,11 @@
 
     <Plugin Name="Secretion"/>
     
-    <Plugin Name="NeighborTracker"/> <!-- Needed for contact_area calculations -->
-    
     <!-- ____________________________INITIAL CONDITION____________________________ -->
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing proteolysis/collagenstrands.piff</PIFName>
+        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
     </Steppable>
 
     <!--Not necessary for now-->

@@ -96,14 +96,6 @@ class MMPSecretionSteppable(SecretionBasePy):
         secretor = self.get_field_secretor("MMP")
         for cell in self.cell_list:
             if cell.type == self.TUMOR:
-                
-                # This calculates the contact area of the tumor and collagen cells
-                # TODO: Need to discuss if this code is worth the cost.
-                contact_area = 0
-                for (c_cell,area) in self.get_cell_neighbor_data_list(cell):
-                    if c_cell.type == self.COLLAGEN:
-                        contact_area = area
-                        
                 # Secretion rate depends on cell confinement
                 delta_volume = cell.targetVolume - cell.volume
                 #delta_surface = cell.targetSurface - cell.surface
@@ -114,7 +106,7 @@ class MMPSecretionSteppable(SecretionBasePy):
                 confinement_energy = tumor_lambda_volume * delta_volume ** 2 \
                                      + tumor_lambda_surface * delta_surface ** 2 # Why should this be quadratic?
                 
-                secr_rate = (confinement_energy+mmp_offset) * sqrt(contact_area) * 2e-5 # How should secretion rate depend on contact area?
+                secr_rate = (confinement_energy+mmp_offset) * 5e-5 # How should secretion rate depend on contact area?
                 secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
 
 
