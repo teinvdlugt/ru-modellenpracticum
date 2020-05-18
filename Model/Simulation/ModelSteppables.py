@@ -11,7 +11,7 @@ tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_initial_surface = 8 * sqrt(tumor_initial_volume / math.pi)  # See also volume_to_surface function
 tumor_lambda_surface = 1.0  # TODO what does Scianna say?
 
-tumor_growth_rate = 0.05  # per MCS -- be sure to keep this a float
+tumor_growth_rate = 0.00  # per MCS -- be sure to keep this a float
 
 mitosis_threshold = 2 * tumor_initial_volume  # cell divides if volume > mitosis_threshold
 volume_steppable_frequency = 20  # Maybe change this frequency. I have set it to 10 to reduce computation
