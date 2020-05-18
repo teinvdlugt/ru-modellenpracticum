@@ -59,6 +59,11 @@
         <ChemicalField Name="CTP" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
+      
+        <ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
+        <ChemotaxisByType Lambda="-300" Type="Tumor" ChemotactTowards="Medium"/>
+        <!--<ChemotaxisByType Lambda="300" Type="Tumor" ChemotactTowards="Tumor"/>-->
+      </ChemicalField>
     </Plugin>
 
     <Steppable Type="DiffusionSolverFE">
@@ -108,12 +113,49 @@
                </Plane>
             </BoundaryConditions> TODO maybe add bcs-->
         </DiffusionField>
+      
+        <!-- ____________________________MIGRATION FACTOR____________________________ -->
+      
+        <DiffusionField Name="Migration factor">
+           <DiffusionData>
+              <FieldName>Migration factor</FieldName>
+              <GlobalDiffusionConstant>0.0</GlobalDiffusionConstant>
+              <GlobalDecayConstant>0.008</GlobalDecayConstant>
+              <!-- Additional options are: -->
+              <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
+              <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
+              <DiffusionCoefficient CellType="Tumor">0.05</DiffusionCoefficient>
+              <DecayCoefficient CellType="Tumor">0.03</DecayCoefficient>
+           </DiffusionData>
+           <SecretionData>
+              <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
+
+              <!-- Uniform secretion Definition -->
+              <Secretion Type="Tumor">0.02</Secretion>
+              <!--<SecretionOnContact SecreteOnContactWith="tumor" Type="Medium">0.02</SecretionOnContact>
+              <SecretionOnContact SecreteOnContactWith="tumor" Type="tumor">0.02</SecretionOnContact>-->
+              <!-- <ConstantConcentration Type="tumor">0.1</ConstantConcentration> -->
+           </SecretionData>
+           <BoundaryConditions>
+              <Plane Axis="X">
+                 <!-- Other options are (examples): -->
+                 <Periodic/>
+                 <!-- <ConstantDerivative PlanePosition="Min" Value="10.0"/> -->
+              </Plane>
+              <Plane Axis="Y">
+                 <!-- Other options are (examples): -->
+                 <Periodic/>
+                 <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
+              </Plane>
+           </BoundaryConditions>
+        </DiffusionField>
     </Steppable>
 
-
     <Plugin Name="Secretion"/>
+  
     
     <!-- ____________________________INITIAL CONDITION____________________________ -->
+
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
