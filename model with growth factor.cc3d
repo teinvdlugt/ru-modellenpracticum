@@ -1,6 +1,0 @@
-<Simulation version="4.1.1">
-   <XMLScript Type="XMLScript">Simulation/Model.xml</XMLScript>
-   <PythonScript Type="PythonScript">Simulation/Model.py</PythonScript>
-   <!--<PIFFile Type="PIFFile">Simulation/collagen2d.piff</PIFFile>--> <!--This is not relevant and messes things up when collagen2d.piff doesn't exist-->
-   <Resource Type="Python">Simulation/ModelSteppables.py</Resource>
-</Simulation>
