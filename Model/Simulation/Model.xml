@@ -3,7 +3,7 @@
     <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
 
     <Metadata>
-        <NumberOfProcessors>3</NumberOfProcessors>
+        <NumberOfProcessors>1</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
@@ -13,12 +13,12 @@
     <Potts>
         <!-- Basic properties of Potts model -->
         <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
-        <!--<Dimensions x="200" y="200" z="200"/>-->  <!-- FOR 3D -->
+        <!--<Dimensions x="200" y="200" z="200"/>-->  <!--FOR 3D -->
         <Steps>10000</Steps>
         <NeighborOrder>1</NeighborOrder>
         <Boundary_x>Periodic</Boundary_x>
         <Boundary_y>Periodic</Boundary_y>
-        <!--<Boundary_z>Periodic</Boundary_z>--> <!-- FOR 2D: comment out-->
+        <!--<Boundary_z>Periodic</Boundary_z>--> <!--FOR 3D only-->
 
         <!-- The temperature, aka fluctuation amplitude: -->
         <FluctuationAmplitude>
@@ -122,7 +122,7 @@
            <DiffusionData>
               <FieldName>Migration factor</FieldName>
               <GlobalDiffusionConstant>0.0</GlobalDiffusionConstant>
-              <GlobalDecayConstant>0.008</GlobalDecayConstant>
+              <GlobalDecayConstant>0.01</GlobalDecayConstant>
               <!-- Additional options are: -->
               <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
               <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
@@ -149,6 +149,7 @@
                  <Periodic/>
                  <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
               </Plane>
+               <!--TODO add Z direction as well (for 3D). But what's the point of boundary conds?-->
            </BoundaryConditions>
         </DiffusionField>
     </Steppable>
@@ -161,6 +162,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
+        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>
     </Steppable>
 </CompuCell3D>
