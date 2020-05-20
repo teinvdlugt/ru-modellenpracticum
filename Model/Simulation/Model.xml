@@ -61,6 +61,11 @@
         <ChemicalField Name="CTP" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
+      
+        <ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
+        <ChemotaxisByType Lambda="-300" Type="Tumor" ChemotactTowards="Medium"/>
+        <!--<ChemotaxisByType Lambda="300" Type="Tumor" ChemotactTowards="Tumor"/>-->
+      </ChemicalField>
     </Plugin>
 
     <Steppable Type="DiffusionSolverFE">
@@ -72,28 +77,90 @@
 
                 <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
                 <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
-                <DiffusionCoefficient CellType="Tumor">0.005</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Tumor">5e-04</DiffusionCoefficient>
                 <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
 
                 <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
                 <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
-                <DecayCoefficient CellType="Medium">0.005</DecayCoefficient>
+                <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
 
                 <!--DoNotDecayIn>Tumor</DoNotDecayIn>
                 <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
+
             </DiffusionData>
 
             <SecretionData>
-                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.1</SecretionOnContact>
+                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.03</SecretionOnContact>
             </SecretionData>
+        </DiffusionField>
+        
+        <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
+        
+        <DiffusionField Name="MMP">
+            <DiffusionData>
+                <FieldName>MMP</FieldName>
+                <GlobalDiffusionConstant>1.6e-03</GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
+                <GlobalDecayConstant>2e-04</GlobalDecayConstant>
+                <!-- Maybe add cell-specific decay and diffusion constants? -->
+                
+            </DiffusionData>
+            <!--<BoundaryConditions>
+               <Plane Axis="X">
+                  <ConstantValue PlanePosition="Min" Value="10.0"/>
+                  <ConstantValue PlanePosition="Max" Value="5.0"/>
+               </Plane>
+               <Plane Axis="Y">
+                  <ConstantDerivative PlanePosition="Min" Value="10.0"/>
+                  <ConstantDerivative PlanePosition="Max" Value="5.0"/>
+               </Plane>
+            </BoundaryConditions> TODO maybe add bcs-->
+        </DiffusionField>
+      
+        <!-- ____________________________MIGRATION FACTOR____________________________ -->
+      
+        <DiffusionField Name="Migration factor">
+           <DiffusionData>
+              <FieldName>Migration factor</FieldName>
+              <GlobalDiffusionConstant>0.0</GlobalDiffusionConstant>
+              <GlobalDecayConstant>0.008</GlobalDecayConstant>
+              <!-- Additional options are: -->
+              <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
+              <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
+              <DiffusionCoefficient CellType="Tumor">0.05</DiffusionCoefficient>
+              <DecayCoefficient CellType="Tumor">0.03</DecayCoefficient>
+           </DiffusionData>
+           <SecretionData>
+              <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
+
+              <!-- Uniform secretion Definition -->
+              <Secretion Type="Tumor">0.02</Secretion>
+              <!--<SecretionOnContact SecreteOnContactWith="tumor" Type="Medium">0.02</SecretionOnContact>
+              <SecretionOnContact SecreteOnContactWith="tumor" Type="tumor">0.02</SecretionOnContact>-->
+              <!-- <ConstantConcentration Type="tumor">0.1</ConstantConcentration> -->
+           </SecretionData>
+           <BoundaryConditions>
+              <Plane Axis="X">
+                 <!-- Other options are (examples): -->
+                 <Periodic/>
+                 <!-- <ConstantDerivative PlanePosition="Min" Value="10.0"/> -->
+              </Plane>
+              <Plane Axis="Y">
+                 <!-- Other options are (examples): -->
+                 <Periodic/>
+                 <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
+              </Plane>
+           </BoundaryConditions>
         </DiffusionField>
     </Steppable>
 
+    <Plugin Name="Secretion"/>
+  
+    
     <!-- ____________________________INITIAL CONDITION____________________________ -->
+
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>   <!--FOR 2D-->
-        <!--<PIFName>PIF files/3D/collagen+cell3d.piff</PIFName>-->  <!--FOR 3D-->
+        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
     </Steppable>
 </CompuCell3D>
