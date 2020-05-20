@@ -7,7 +7,7 @@ _3d = False
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
-tumor_growth_rate = 0.01  # per MCS -- be sure to keep this a float
+tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
 collagen_lambda_volume = 11.0  # from Scianna et al.
 mmp_offset = 50  # The amount of mmp constantly secreted
 

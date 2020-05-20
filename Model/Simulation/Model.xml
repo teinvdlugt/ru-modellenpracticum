@@ -163,6 +163,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/collagen+tumoroid2d.piff</PIFName>
+        <PIFName>PIF files/testing proteolysis/collagenstrands.piff</PIFName>
     </Steppable>
 </CompuCell3D>
