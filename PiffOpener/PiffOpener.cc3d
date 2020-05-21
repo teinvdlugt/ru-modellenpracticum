@@ -1,0 +1,5 @@
+<Simulation version="4.1.1">
+   <XMLScript Type="XMLScript">Simulation/PiffOpener.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/PiffOpener.py</PythonScript>
+   <Resource Type="Python">Simulation/PiffOpenerSteppables.py</Resource>
+</Simulation>

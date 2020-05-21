@@ -1,5 +1,6 @@
 from cc3d.core.PySteppables import *
 import math
+import os
 
 # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
 _3d = False
@@ -14,7 +15,10 @@ mmp_offset = 50  # The amount of mmp constantly secreted
 # Steppable frequencies
 volume_steppable_frequency = 20  # Maybe change this frequency. The higher the cheaper computation
 mmpdegradation_steppable_frequency = 10  # mmpdegradation turns out te be extremely expensive
+OutputField_frequency = 10 #Outputs all chemical fields into a CSV file
 
+# Toggles
+OutputField_enable = False
 
 # To increase speed, consider changing every call to this function to the appropriate function (2d or 3d)
 def volume_to_surface(volume):
@@ -95,6 +99,25 @@ class MitosisSteppable(MitosisSteppableBase):
         self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
 
+class OutputFieldsSteppable(SecretionBasePy):
+    def __init__(self, frequency=OutputField_frequency):
+        SecretionBasePy.__init__(self, frequency)
+    
+    def step(self,mcs):
+        if OutputField_enable:
+            python_path = os.path.dirname(os.path.abspath(__file__))
+            path = python_path+"\Fields_output"
+            if not os.path.exists(path):
+                os.makedirs(path)
+            fields = ["CTP","MMP","Migration factor"]
+            for field in fields:
+                f = open("".join((path,"\Output_",field,str(mcs-1),".csv")),"w")
+                field_data = CompuCell.getConcentrationField(self.simulator, field)
+                for pixel in self.every_pixel():
+                    x,y,z=pixel[0],pixel[1],pixel[2]
+                    f.write((",".join((str(x),str(y),str(z),str(field_data.get(pixel)))))+"\n")
+                f.close()
+
 
 class MMPSecretionSteppable(SecretionBasePy):
     # Docs: https://compucell3dreferencemanual.readthedocs.io/en/latest/secretion.html
@@ -142,3 +165,4 @@ class MMPDegradationSteppable(SteppableBasePy):
                     self.cell_field[pixel.x, pixel.y, pixel.z] = self.medium_cell
                     # Remove MMP:
                     mmp.set(pixel, 0)
+    
