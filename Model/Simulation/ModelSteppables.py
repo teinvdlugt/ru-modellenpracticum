@@ -160,7 +160,7 @@ class OutputFieldsSteppable(SteppableBasePy):
                 os.makedirs(path)
             fields = ["CTP","MMP","Migration factor"]
             for field in fields:
-                f = open("".join((path,"\Output_",field,str(mcs-1),".csv")),"w")
+                f = open("".join((path,"\Output_",field,str(mcs),".csv")),"w")
                 field_data = CompuCell.getConcentrationField(self.simulator, field)
                 for pixel in self.every_pixel():
                     x,y,z=pixel[0],pixel[1],pixel[2]
