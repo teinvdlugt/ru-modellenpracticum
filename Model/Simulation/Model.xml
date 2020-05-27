@@ -3,7 +3,7 @@
     <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
 
     <Metadata>
-        <NumberOfProcessors>1</NumberOfProcessors>
+        <NumberOfProcessors>4</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
@@ -13,12 +13,12 @@
     <Potts>
         <!-- Basic properties of Potts model -->
         <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
-        <!--<Dimensions x="200" y="200" z="200"/>-->  <!--FOR 3D -->
+        <!--Dimensions x="200" y="200" z="200"/--> <!--FOR 3D -->
         <Steps>10000</Steps>
         <NeighborOrder>1</NeighborOrder>
         <Boundary_x>Periodic</Boundary_x>
         <Boundary_y>Periodic</Boundary_y>
-        <!--<Boundary_z>Periodic</Boundary_z>--> <!--FOR 3D only-->
+        <!--Boundary_z>Periodic</Boundary_z--> <!--FOR 3D only-->
 
         <!-- The temperature, aka fluctuation amplitude: -->
         <FluctuationAmplitude>

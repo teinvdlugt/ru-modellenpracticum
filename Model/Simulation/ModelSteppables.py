@@ -1,6 +1,7 @@
 from cc3d.core.PySteppables import *
 import math
 import os
+import time
 
 # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
 _3d = False
@@ -153,16 +154,31 @@ class OutputFieldsSteppable(SteppableBasePy):
         SteppableBasePy.__init__(self, frequency)
     
     def step(self,mcs):
+        start = time.time()
         if OutputField_enable:
             python_path = os.path.dirname(os.path.abspath(__file__))
             path = python_path+"\Fields_output"
             if not os.path.exists(path):
                 os.makedirs(path)
             fields = ["CTP","MMP","Migration factor"]
+            number_of_fields = len(fields)
+            f = []
+            field_data= []
+            if _3d:
+                size = (number_of_fields,200,200,200)
+            else:
+                size = (number_of_fields,200,200,1)
+            data= np.zeros(size)
+            
             for field in fields:
-                f = open("".join((path,"\Output_",field,str(mcs),".csv")),"w")
-                field_data = CompuCell.getConcentrationField(self.simulator, field)
-                for pixel in self.every_pixel():
-                    x,y,z=pixel[0],pixel[1],pixel[2]
-                    f.write((",".join((str(x),str(y),str(z),str(field_data.get(pixel)))))+"\n")
-                f.close()
+                f.append(open("".join((path,"\Output_",field,str(mcs),".txt")),"w"))
+                field_data.append(CompuCell.getConcentrationField(self.simulator, field))
+            for i in range(0,200):
+                for j in range(0,200):
+                    for k in range (0,size[-1]):
+                       for l in range (0,number_of_fields):
+                           data[l,i,j,k] = field_data[l][i,j,k]
+            for i in range(0,number_of_fields):
+                data[i].astype("float16").tofile(f[i])
+                f[i].close()
+            print("Saving all chemical fields took %f seconds" % (time.time()-start))

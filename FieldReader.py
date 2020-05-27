@@ -22,35 +22,24 @@ directory = os.fsencode(path+"\Model\Simulation\Fields_output")
 
 for file in os.listdir(directory):
      filename = os.fsdecode(file)
-     if filename.endswith(".csv"): 
+     if filename.endswith(".txt"): 
          f = open(os.path.join(directory, file),"r")
-         lines = f.readlines()
+         data_array = np.fromfile(f,dtype="float16").reshape(tuple(lattice_dim)).astype("float32")
          
          if lattice_dim[2] == 1:
-             data_array = np.zeros((lattice_dim[1],lattice_dim[0]))
-             for line in lines:
-                 line_data = line.split(",")
-                 data_array[int(line_data[1])-lowest_coord[1],int(line_data[0])-lowest_coord[0]]=float((line_data[3])[:-1])
-                 
-             plt.imshow(data_array,origin="lower")
+             data_array = data_array.squeeze()
+             plt.imshow(data_array.T,origin="lower")
              plt.colorbar(orientation='vertical')
-             f.close()
              plt.title(filename)
              plt.xlabel("x")
              plt.ylabel("y")
              plt.show()
          else:
-             data_array = np.zeros((lattice_dim[0],lattice_dim[1],lattice_dim[2]))
-             for line in lines:
-                 line_data = line.split(",")
-                 data_array[int(line_data[0])-lowest_coord[0],int(line_data[1])-lowest_coord[1],int(line_data[2])-lowest_coord[2]]=float((line_data[3])[:-1])
-
              if not contour_toggle_3d:
                  grid = mlab.pipeline.scalar_field(data_array)
                  vol = mlab.pipeline.volume(grid,vmin=1e-06)
 
                  # Change the opacity to something more reasonable
-                 
                  try:
                       from tvtk.util.ctf import PiecewiseFunction
                  except ImportError:
@@ -63,7 +52,6 @@ for file in os.listdir(directory):
                  vol._volume_property.set_scalar_opacity(otf)
              else:
                  mlab.contour3d(data_array,extent=[lowest_coord[0],highest_coord[0],lowest_coord[1],highest_coord[1],lowest_coord[2],highest_coord[2]])
-             
              
              mlab.axes()
              mlab.title(filename,size=1,opacity=0.8)
