@@ -2,6 +2,7 @@ from cc3d.core.PySteppables import *
 import math
 import os
 import time
+import zlib
 
 # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
 _3d = False
@@ -155,6 +156,7 @@ class OutputFieldsSteppable(SteppableBasePy):
     
     def step(self,mcs):
         start = time.time()
+        compression_save_frequency = 10*OutputField_frequency
         if OutputField_enable:
             python_path = os.path.dirname(os.path.abspath(__file__))
             path = python_path+"\Fields_output"
@@ -171,7 +173,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             data= np.zeros(size)
             
             for field in fields:
-                f.append(open("".join((path,"\Output_",field,str(mcs),".txt")),"w"))
+                f.append(open("".join((path,"\Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
                 field_data.append(CompuCell.getConcentrationField(self.simulator, field))
             for i in range(0,200):
                 for j in range(0,200):
@@ -182,3 +184,20 @@ class OutputFieldsSteppable(SteppableBasePy):
                 data[i].astype("float16").tofile(f[i])
                 f[i].close()
             print("Saving all chemical fields took %f seconds" % (time.time()-start))
+            
+            
+            if (mcs+10)%compression_save_frequency == 0:
+                for field in fields:
+                    uncompressed = []
+                    for filename in sorted(os.listdir(path)):
+                        if (filename.endswith("unc.txt") and field in filename):
+                            file = open(os.path.join(path,filename),"rb")
+                            uncompressed.append(file.read())
+                            file.close()
+                            os.remove(os.path.join(path,filename))
+                    
+                    compressed = zlib.compress(np.array(b"".join(uncompressed)),1)
+                    g = open("".join((path,"\Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
+                    g.write(compressed)
+                    g.close()
+                        
