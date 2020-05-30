@@ -3,7 +3,7 @@
     <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
 
     <Metadata>
-        <NumberOfProcessors>4</NumberOfProcessors>
+        <NumberOfProcessors>2</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
@@ -62,10 +62,10 @@
             <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
         </ChemicalField>
 
-        <ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
+        <!--<ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="-300" Type="Tumor" ChemotactTowards="Medium"/>
-            <!--<ChemotaxisByType Lambda="300" Type="Tumor" ChemotactTowards="Tumor"/>-->
-        </ChemicalField>
+            &lt;!&ndash;<ChemotaxisByType Lambda="300" Type="Tumor" ChemotactTowards="Tumor"/>&ndash;&gt;
+        </ChemicalField>-->
     </Plugin>
 
     <Steppable Type="DiffusionSolverFE">
@@ -119,40 +119,40 @@
 
         <!-- ____________________________MIGRATION FACTOR____________________________ -->
 
-        <DiffusionField Name="Migration factor">
+        <!--<DiffusionField Name="Migration factor">
             <DiffusionData>
                 <FieldName>Migration factor</FieldName>
                 <GlobalDiffusionConstant>0.0</GlobalDiffusionConstant>
                 <GlobalDecayConstant>0.01</GlobalDecayConstant>
-                <!-- Additional options are: -->
-                <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
-                <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
+                &lt;!&ndash; Additional options are: &ndash;&gt;
+                &lt;!&ndash; <InitialConcentrationExpression>x*y</InitialConcentrationExpression> &ndash;&gt;
+                &lt;!&ndash; <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> &ndash;&gt;
                 <DiffusionCoefficient CellType="Tumor">0.05</DiffusionCoefficient>
                 <DecayCoefficient CellType="Tumor">0.03</DecayCoefficient>
             </DiffusionData>
             <SecretionData>
-                <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
+                 &lt;!&ndash;When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants &ndash;&gt;
 
-                <!-- Uniform secretion Definition -->
+                &lt;!&ndash; Uniform secretion Definition &ndash;&gt;
                 <Secretion Type="Tumor">0.02</Secretion>
-                <!--<SecretionOnContact SecreteOnContactWith="tumor" Type="Medium">0.02</SecretionOnContact>
-                <SecretionOnContact SecreteOnContactWith="tumor" Type="tumor">0.02</SecretionOnContact>-->
-                <!-- <ConstantConcentration Type="tumor">0.1</ConstantConcentration> -->
+                &lt;!&ndash;<SecretionOnContact SecreteOnContactWith="tumor" Type="Medium">0.02</SecretionOnContact>
+                <SecretionOnContact SecreteOnContactWith="tumor" Type="tumor">0.02</SecretionOnContact>&ndash;&gt;
+                &lt;!&ndash; <ConstantConcentration Type="tumor">0.1</ConstantConcentration> &ndash;&gt;
             </SecretionData>
             <BoundaryConditions>
                 <Plane Axis="X">
-                    <!-- Other options are (examples): -->
+                    &lt;!&ndash; Other options are (examples): &ndash;&gt;
                     <Periodic/>
-                    <!-- <ConstantDerivative PlanePosition="Min" Value="10.0"/> -->
+                    &lt;!&ndash; <ConstantDerivative PlanePosition="Min" Value="10.0"/> &ndash;&gt;
                 </Plane>
                 <Plane Axis="Y">
-                    <!-- Other options are (examples): -->
+                    &lt;!&ndash; Other options are (examples): &ndash;&gt;
                     <Periodic/>
-                    <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
+                    &lt;!&ndash; <ConstantValue PlanePosition="Min" Value="10.0"/> &ndash;&gt;
                 </Plane>
-                <!--TODO add Z direction as well (for 3D). But what's the point of boundary conds?-->
+                &lt;!&ndash;TODO add Z direction as well (for 3D). But what's the point of boundary conds?&ndash;&gt;
             </BoundaryConditions>
-        </DiffusionField>
+        </DiffusionField>-->
     </Steppable>
 
     <Plugin Name="Secretion"/>
@@ -163,6 +163,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing proteolysis/collagenstrands.piff</PIFName>
+        <PIFName>PIF files/testing caterpillar/onecollagen_threecells.piff</PIFName>
     </Steppable>
 </CompuCell3D>
