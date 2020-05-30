@@ -3,6 +3,7 @@ import math
 import os
 import time
 import zlib
+import random
 
 # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
 _3d = False
@@ -12,7 +13,8 @@ tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
 collagen_lambda_volume = 11.0  # from Scianna et al.
-mmp_offset = 50  # The amount of mmp constantly secreted
+mmp_offset = 200  # The amount of mmp constantly secreted
+ctp_secr_rate = 0.03
 
 # Steppable frequencies
 volume_steppable_frequency = 20  # Maybe change this frequency. The higher the cheaper computation
@@ -150,10 +152,33 @@ class MMPDegradationSteppable(SteppableBasePy):
                     mmp.set(pixel, 0)
 
 
+class CaterpillarSteppable(SecretionBasePy):
+    def __init__(self, frequency=mmpdegradation_steppable_frequency):
+        SteppableBasePy.__init__(self, frequency)
+
+    def start(self):
+        # https://pythonscriptingmanual.readthedocs.io/en/latest/chemotaxis_on_a_cell-by-cell_basis.html
+        for cell in self.cell_list_by_type(self.TUMOR):
+            # Choose random ctp field and assign to cell:
+            ctp_field = random.randint(0, 2)
+            cell.dict["CTP_FIELD"] = ctp_field
+            self.chemotaxisPlugin.addChemotaxisData(cell, ["CTP1", "CTP2", "CTP3"][ctp_field]).setLambda(20.0)
+            # .assignChemotactTowardsVectorTypes([self.MEDIUM])
+
+    def step(self, mcs):
+        secretors = [self.get_field_secretor("CTP1"),
+                     self.get_field_secretor("CTP2"),
+                     self.get_field_secretor("CTP3")]
+        for cell in self.cell_list_by_type(self.TUMOR):
+            # Secrete CTP on contact with collagen
+            secretors[cell.dict["CTP_FIELD"]].secreteInsideCellAtBoundaryOnContactWith(cell, ctp_secr_rate,
+                                                                                       [self.COLLAGEN])
+
+
 class OutputFieldsSteppable(SteppableBasePy):
     def __init__(self, frequency=OutputField_frequency):
         SteppableBasePy.__init__(self, frequency)
-    
+
     def step(self,mcs):
         start = time.time()
         compression_save_frequency = 10*OutputField_frequency
@@ -171,7 +196,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             else:
                 size = (number_of_fields,200,200,1)
             data= np.zeros(size)
-            
+
             for field in fields:
                 f.append(open("".join((path,"\Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
                 field_data.append(CompuCell.getConcentrationField(self.simulator, field))
@@ -184,8 +209,8 @@ class OutputFieldsSteppable(SteppableBasePy):
                 data[i].astype("float16").tofile(f[i])
                 f[i].close()
             print("Saving all chemical fields took %f seconds" % (time.time()-start))
-            
-            
+
+
             if (mcs+10)%compression_save_frequency == 0:
                 for field in fields:
                     uncompressed = []
@@ -195,9 +220,9 @@ class OutputFieldsSteppable(SteppableBasePy):
                             uncompressed.append(file.read())
                             file.close()
                             os.remove(os.path.join(path,filename))
-                    
+
                     compressed = zlib.compress(np.array(b"".join(uncompressed)),1)
                     g = open("".join((path,"\Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
                     g.write(compressed)
                     g.close()
-                        
+

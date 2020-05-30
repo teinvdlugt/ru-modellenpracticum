@@ -58,9 +58,11 @@
 
     <!-- The constants for the caterpillar (CPT field) movement are of course a bit finetuned, feel free to play with them -->
     <Plugin Name="Chemotaxis">
-        <ChemicalField Name="CTP" Source="DiffusionSolverFE">
-            <ChemotaxisByType Lambda="20.0" Type="Tumor"/>
+        <ChemicalField Name="CTP1" Source="DiffusionSolverFE">
+            <!--<ChemotaxisByType Lambda="20.0" Type="Tumor"/>-->
         </ChemicalField>
+        <ChemicalField Name="CTP2" Source="DiffusionSolverFE" />
+        <ChemicalField Name="CTP3" Source="DiffusionSolverFE" />
 
         <ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="-300" Type="Tumor" ChemotactTowards="Medium"/>
@@ -69,9 +71,9 @@
     </Plugin>
 
     <Steppable Type="DiffusionSolverFE">
-        <DiffusionField Name="CTP">
+        <DiffusionField Name="CTP1">
             <DiffusionData>
-                <FieldName>CTP</FieldName>
+                <FieldName>CTP1</FieldName>
                 <GlobalDiffusionConstant>0.00</GlobalDiffusionConstant>
                 <GlobalDecayConstant>0.00</GlobalDecayConstant>
 
@@ -86,12 +88,39 @@
 
                 <!--DoNotDecayIn>Tumor</DoNotDecayIn>
                 <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
-
             </DiffusionData>
 
-            <SecretionData>
+            <!--<SecretionData>
                 <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.03</SecretionOnContact>
-            </SecretionData>
+            </SecretionData>-->
+        </DiffusionField>
+        <DiffusionField Name="CTP2">
+            <DiffusionData>
+                <FieldName>CTP2</FieldName>
+                <GlobalDiffusionConstant>0.00</GlobalDiffusionConstant>
+                <GlobalDecayConstant>0.00</GlobalDecayConstant>
+                <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
+                <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Tumor">5e-04</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
+                <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
+                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
+                <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
+            </DiffusionData>
+        </DiffusionField>
+        <DiffusionField Name="CTP3">
+            <DiffusionData>
+                <FieldName>CTP3</FieldName>
+                <GlobalDiffusionConstant>0.00</GlobalDiffusionConstant>
+                <GlobalDecayConstant>0.00</GlobalDecayConstant>
+                <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
+                <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Tumor">5e-04</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
+                <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
+                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
+                <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
+            </DiffusionData>
         </DiffusionField>
 
         <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
