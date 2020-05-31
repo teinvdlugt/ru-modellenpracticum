@@ -3,7 +3,7 @@
     <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
 
     <Metadata>
-        <NumberOfProcessors>4</NumberOfProcessors>
+        <NumberOfProcessors>1</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
@@ -44,7 +44,7 @@
         <!-- The following values are from Scianna et al.: TM 6.5, TC 4.5, TT 12.0 -->
         <Energy Type1="Tumor" Type2="Medium">6.5</Energy>
         <Energy Type1="Tumor" Type2="Collagen">4.5</Energy>
-        <Energy Type1="Tumor" Type2="Tumor">10.0</Energy>
+        <Energy Type1="Tumor" Type2="Tumor">12.0</Energy>
 
         <!-- I don't know what Scianna et al. do with these. -->
         <!-- Let's make them high so the adhesion is weak -->
@@ -64,10 +64,10 @@
         <ChemicalField Name="CTP2" Source="DiffusionSolverFE" />
         <ChemicalField Name="CTP3" Source="DiffusionSolverFE" />
 
-        <ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
+        <!--<ChemicalField Name="Migration factor" Source="DiffusionSolverFE">
             <ChemotaxisByType Lambda="-300" Type="Tumor" ChemotactTowards="Medium"/>
-            <!--<ChemotaxisByType Lambda="300" Type="Tumor" ChemotactTowards="Tumor"/>-->
-        </ChemicalField>
+            &lt;!&ndash;<ChemotaxisByType Lambda="300" Type="Tumor" ChemotactTowards="Tumor"/>&ndash;&gt;
+        </ChemicalField>-->
     </Plugin>
 
     <Steppable Type="DiffusionSolverFE">
@@ -83,7 +83,7 @@
                 <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
 
                 <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
-                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
+                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient> <!-- ? -->
                 <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
 
                 <!--DoNotDecayIn>Tumor</DoNotDecayIn>
@@ -125,63 +125,53 @@
 
         <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
 
-        <DiffusionField Name="MMP">
+        <!--<DiffusionField Name="MMP">
             <DiffusionData>
                 <FieldName>MMP</FieldName>
                 <GlobalDiffusionConstant>1.6e-03
-                </GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
+                </GlobalDiffusionConstant>  &lt;!&ndash;Scianna: 0.0016 (but different units?) &ndash;&gt;
                 <GlobalDecayConstant>2e-04</GlobalDecayConstant>
-                <!-- Maybe add cell-specific decay and diffusion constants? -->
-
+                &lt;!&ndash; Maybe add cell-specific decay and diffusion constants? &ndash;&gt;
             </DiffusionData>
-            <!--<BoundaryConditions>
-               <Plane Axis="X">
-                  <ConstantValue PlanePosition="Min" Value="10.0"/>
-                  <ConstantValue PlanePosition="Max" Value="5.0"/>
-               </Plane>
-               <Plane Axis="Y">
-                  <ConstantDerivative PlanePosition="Min" Value="10.0"/>
-                  <ConstantDerivative PlanePosition="Max" Value="5.0"/>
-               </Plane>
-            </BoundaryConditions> TODO maybe add bcs-->
-        </DiffusionField>
+            &lt;!&ndash; TODO maybe add boundary conditions &ndash;&gt;
+        </DiffusionField>-->
 
         <!-- ____________________________MIGRATION FACTOR____________________________ -->
 
-        <DiffusionField Name="Migration factor">
+        <!--<DiffusionField Name="Migration factor">
             <DiffusionData>
                 <FieldName>Migration factor</FieldName>
                 <GlobalDiffusionConstant>0.0</GlobalDiffusionConstant>
                 <GlobalDecayConstant>0.01</GlobalDecayConstant>
-                <!-- Additional options are: -->
-                <!-- <InitialConcentrationExpression>x*y</InitialConcentrationExpression> -->
-                <!-- <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> -->
+                &lt;!&ndash; Additional options are: &ndash;&gt;
+                &lt;!&ndash; <InitialConcentrationExpression>x*y</InitialConcentrationExpression> &ndash;&gt;
+                &lt;!&ndash; <ConcentrationFileName>INITIAL CONCENTRATION FIELD - typically a file with path Simulation/NAME_OF_THE_FILE.txt</ConcentrationFileName> &ndash;&gt;
                 <DiffusionCoefficient CellType="Tumor">0.05</DiffusionCoefficient>
                 <DecayCoefficient CellType="Tumor">0.03</DecayCoefficient>
             </DiffusionData>
             <SecretionData>
-                <!-- When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants -->
+                 &lt;!&ndash;When secretion is defined inside DissufionSolverFE all secretion constants are scaled automaticaly to account for the extra calls to the diffusion step when handling large diffusion constants &ndash;&gt;
 
-                <!-- Uniform secretion Definition -->
+                &lt;!&ndash; Uniform secretion Definition &ndash;&gt;
                 <Secretion Type="Tumor">0.02</Secretion>
-                <!--<SecretionOnContact SecreteOnContactWith="tumor" Type="Medium">0.02</SecretionOnContact>
-                <SecretionOnContact SecreteOnContactWith="tumor" Type="tumor">0.02</SecretionOnContact>-->
-                <!-- <ConstantConcentration Type="tumor">0.1</ConstantConcentration> -->
+                &lt;!&ndash;<SecretionOnContact SecreteOnContactWith="tumor" Type="Medium">0.02</SecretionOnContact>
+                <SecretionOnContact SecreteOnContactWith="tumor" Type="tumor">0.02</SecretionOnContact>&ndash;&gt;
+                &lt;!&ndash; <ConstantConcentration Type="tumor">0.1</ConstantConcentration> &ndash;&gt;
             </SecretionData>
             <BoundaryConditions>
                 <Plane Axis="X">
-                    <!-- Other options are (examples): -->
+                    &lt;!&ndash; Other options are (examples): &ndash;&gt;
                     <Periodic/>
-                    <!-- <ConstantDerivative PlanePosition="Min" Value="10.0"/> -->
+                    &lt;!&ndash; <ConstantDerivative PlanePosition="Min" Value="10.0"/> &ndash;&gt;
                 </Plane>
                 <Plane Axis="Y">
-                    <!-- Other options are (examples): -->
+                    &lt;!&ndash; Other options are (examples): &ndash;&gt;
                     <Periodic/>
-                    <!-- <ConstantValue PlanePosition="Min" Value="10.0"/> -->
+                    &lt;!&ndash; <ConstantValue PlanePosition="Min" Value="10.0"/> &ndash;&gt;
                 </Plane>
-                <!--TODO add Z direction as well (for 3D). But what's the point of boundary conds?-->
+                &lt;!&ndash;TODO add Z direction as well (for 3D). But what's the point of boundary conds?&ndash;&gt;
             </BoundaryConditions>
-        </DiffusionField>
+        </DiffusionField>-->
     </Steppable>
 
     <Plugin Name="Secretion"/>
@@ -192,6 +182,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing proteolysis/collagenstrands.piff</PIFName>
+        <PIFName>PIF files/testing caterpillar/onecollagen_onecell.piff</PIFName>
     </Steppable>
 </CompuCell3D>
