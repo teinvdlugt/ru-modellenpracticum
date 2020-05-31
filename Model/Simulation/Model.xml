@@ -95,16 +95,16 @@
 
         <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
 
-        <DiffusionField Name="MMP">
+        <!--<DiffusionField Name="MMP">
             <DiffusionData>
                 <FieldName>MMP</FieldName>
                 <GlobalDiffusionConstant>1.6e-03
-                </GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
+                </GlobalDiffusionConstant>  &lt;!&ndash;Scianna: 0.0016 (but different units?) &ndash;&gt;
                 <GlobalDecayConstant>2e-04</GlobalDecayConstant>
-                <!-- Maybe add cell-specific decay and diffusion constants? -->
+                &lt;!&ndash; Maybe add cell-specific decay and diffusion constants? &ndash;&gt;
             </DiffusionData>
-            <!-- TODO maybe add boundary conditions -->
-        </DiffusionField>
+            &lt;!&ndash; TODO maybe add boundary conditions &ndash;&gt;
+        </DiffusionField>-->
 
         <!-- ____________________________MIGRATION FACTOR____________________________ -->
 

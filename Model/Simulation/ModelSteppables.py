@@ -6,8 +6,8 @@ import zlib
 
 # Toggles
 _3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
-mmp_enabled = True  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
-growth_enabled = True
+mmp_enabled = False  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
+growth_mitosis_enabled = True  # Handled in Model.py
 OutputField_enable = False
 
 # Volume, surface, growth and mitosis parameters
@@ -18,9 +18,9 @@ collagen_lambda_volume = 11.0  # from Scianna et al.
 mmp_offset = 50  # The amount of mmp constantly secreted
 
 # Steppable frequencies
-volume_steppable_frequency = 20 if growth_enabled else 1e10  # The higher the cheaper computation
+volume_steppable_frequency = 20  # The higher the cheaper computation
 mmpdegradation_steppable_frequency = 10  # mmpdegradation turns out te be extremely expensive
-OutputField_frequency = 10 #Outputs all chemical fields into a CSV file
+OutputField_frequency = 10  # Outputs all chemical fields into a CSV file
 
 
 # To increase speed, consider changing every call to this function to the appropriate function (2d or 3d)
@@ -45,7 +45,7 @@ def volume_to_surface3d(volume):
     return _24_3_4pi_23 * (volume ** (2 / 3.))
 
 
-class VolumeSurfaceSteppable(SteppableBasePy):
+class VolumeSurfaceInitialiserSteppable(SteppableBasePy):
     def __init__(self, frequency=volume_steppable_frequency):
         SteppableBasePy.__init__(self, frequency)
 
@@ -73,13 +73,8 @@ class VolumeSurfaceSteppable(SteppableBasePy):
         mitosis_threshold = tumor_cell.volume * 2
         # This assumes that all cells have the same size!
 
-    def step(self, mcs):
-        for cell in self.cell_list_by_type(self.TUMOR):
-            cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
-            cell.targetSurface = volume_to_surface(cell.targetVolume)
 
-
-class MitosisSteppable(MitosisSteppableBase):
+class GrowthMitosisSteppable(MitosisSteppableBase):
     # Docs: https://pythonscriptingmanual.readthedocs.io/en/latest/mitosis.html
     def __init__(self, frequency=10):  # Maybe change this frequency. I have set it to 10 to reduce computation
         MitosisSteppableBase.__init__(self, frequency)
@@ -87,6 +82,12 @@ class MitosisSteppable(MitosisSteppableBase):
         self.set_parent_child_position_flag(0)
 
     def step(self, mcs):
+        # Growth
+        for cell in self.cell_list_by_type(self.TUMOR):
+            cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
+            cell.targetSurface = volume_to_surface(cell.targetVolume)
+
+        # Mitosis
         cells_to_divide = []
         for cell in self.cell_list:
             if cell.type == self.TUMOR and cell.volume > mitosis_threshold:

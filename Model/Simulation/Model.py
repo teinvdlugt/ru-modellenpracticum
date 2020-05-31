@@ -1,10 +1,10 @@
 from cc3d import CompuCellSetup
 from .ModelSteppables import *  # You might need to remove the dot
-from .ModelSteppables import mmp_enabled
 
 # STEPPABLES
-CompuCellSetup.register_steppable(steppable=VolumeSurfaceSteppable())
-CompuCellSetup.register_steppable(steppable=MitosisSteppable())
+CompuCellSetup.register_steppable(steppable=VolumeSurfaceInitialiserSteppable())
+if growth_mitosis_enabled:
+    CompuCellSetup.register_steppable(steppable=GrowthMitosisSteppable())
 if mmp_enabled:
     CompuCellSetup.register_steppable(steppable=MMPSecretionSteppable())
     CompuCellSetup.register_steppable(steppable=MMPDegradationSteppable())
