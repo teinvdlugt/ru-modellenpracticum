@@ -6,7 +6,8 @@ import zlib
 
 # Toggles
 _3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
-mmp_enabled = False  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
+mmp_enabled = True  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
+growth_enabled = True
 OutputField_enable = False
 
 # Volume, surface, growth and mitosis parameters
@@ -17,7 +18,7 @@ collagen_lambda_volume = 11.0  # from Scianna et al.
 mmp_offset = 50  # The amount of mmp constantly secreted
 
 # Steppable frequencies
-volume_steppable_frequency = 20  # Maybe change this frequency. The higher the cheaper computation
+volume_steppable_frequency = 20 if growth_enabled else 1e10  # The higher the cheaper computation
 mmpdegradation_steppable_frequency = 10  # mmpdegradation turns out te be extremely expensive
 OutputField_frequency = 10 #Outputs all chemical fields into a CSV file
 
@@ -73,10 +74,9 @@ class VolumeSurfaceSteppable(SteppableBasePy):
         # This assumes that all cells have the same size!
 
     def step(self, mcs):
-        for cell in self.cell_list:
-            if cell.type == self.TUMOR:
-                cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
-                cell.targetSurface = volume_to_surface(cell.targetVolume)
+        for cell in self.cell_list_by_type(self.TUMOR):
+            cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
+            cell.targetSurface = volume_to_surface(cell.targetVolume)
 
 
 class MitosisSteppable(MitosisSteppableBase):
