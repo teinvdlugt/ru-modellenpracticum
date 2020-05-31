@@ -4,8 +4,10 @@ import os
 import time
 import zlib
 
-# 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
-_3d = False
+# Toggles
+_3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
+mmp_enabled = False  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
+OutputField_enable = False
 
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
@@ -19,8 +21,6 @@ volume_steppable_frequency = 20  # Maybe change this frequency. The higher the c
 mmpdegradation_steppable_frequency = 10  # mmpdegradation turns out te be extremely expensive
 OutputField_frequency = 10 #Outputs all chemical fields into a CSV file
 
-# Toggles
-OutputField_enable = False
 
 # To increase speed, consider changing every call to this function to the appropriate function (2d or 3d)
 def volume_to_surface(volume):
@@ -200,4 +200,3 @@ class OutputFieldsSteppable(SteppableBasePy):
                     g = open("".join((path,"\Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
                     g.write(compressed)
                     g.close()
-                        

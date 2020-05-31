@@ -3,7 +3,7 @@
     <!-- ____________________________SIMULATION PARAMETERS____________________________ -->
 
     <Metadata>
-        <NumberOfProcessors>2</NumberOfProcessors>
+        <NumberOfProcessors>1</NumberOfProcessors>
         <DebugOutputFrequency>10</DebugOutputFrequency>
         <!-- <NonParallelModule Name="Potts"/> -->
     </Metadata>
@@ -44,7 +44,7 @@
         <!-- The following values are from Scianna et al.: TM 6.5, TC 4.5, TT 12.0 -->
         <Energy Type1="Tumor" Type2="Medium">6.5</Energy>
         <Energy Type1="Tumor" Type2="Collagen">4.5</Energy>
-        <Energy Type1="Tumor" Type2="Tumor">10.0</Energy>
+        <Energy Type1="Tumor" Type2="Tumor">12.0</Energy>
 
         <!-- I don't know what Scianna et al. do with these. -->
         <!-- Let's make them high so the adhesion is weak -->
@@ -81,12 +81,11 @@
                 <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
 
                 <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
-                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient>
+                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient> <!-- ? -->
                 <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
 
                 <!--DoNotDecayIn>Tumor</DoNotDecayIn>
                 <DoNotDiffuseTo>Medium</DoNotDiffuseTo-->
-
             </DiffusionData>
 
             <SecretionData>
@@ -103,18 +102,8 @@
                 </GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
                 <GlobalDecayConstant>2e-04</GlobalDecayConstant>
                 <!-- Maybe add cell-specific decay and diffusion constants? -->
-
             </DiffusionData>
-            <!--<BoundaryConditions>
-               <Plane Axis="X">
-                  <ConstantValue PlanePosition="Min" Value="10.0"/>
-                  <ConstantValue PlanePosition="Max" Value="5.0"/>
-               </Plane>
-               <Plane Axis="Y">
-                  <ConstantDerivative PlanePosition="Min" Value="10.0"/>
-                  <ConstantDerivative PlanePosition="Max" Value="5.0"/>
-               </Plane>
-            </BoundaryConditions> TODO maybe add bcs-->
+            <!-- TODO maybe add boundary conditions -->
         </DiffusionField>
 
         <!-- ____________________________MIGRATION FACTOR____________________________ -->
@@ -163,6 +152,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing caterpillar/onecollagen_threecells.piff</PIFName>
+        <PIFName>PIF files/testing caterpillar/onecollagen_onecell.piff</PIFName>
     </Steppable>
 </CompuCell3D>
