@@ -17,7 +17,7 @@ tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
 collagen_lambda_volume = 11.0  # from Scianna et al.
 mmp_offset = 50  # The amount of mmp constantly secreted
-ctp_secr_rate = 0.03
+ctp_secr_rate = 0.3
 
 # Steppable frequencies
 volume_steppable_frequency = 20  # The higher the cheaper computation
