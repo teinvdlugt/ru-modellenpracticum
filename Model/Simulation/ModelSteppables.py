@@ -9,7 +9,8 @@ _3d = False
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
-collagen_lambda_volume = 11.0  # from Scianna et al.
+collagen_lambda_volume = 0.0  # from Scianna et al.
+collagen_volume_energy = -100.0
 mmp_offset = 50  # The amount of mmp constantly secreted
 
 # Steppable frequencies
@@ -58,6 +59,7 @@ class VolumeSurfaceSteppable(SteppableBasePy):
             if cell.type == self.COLLAGEN:
                 cell.targetVolume = cell.volume
                 cell.lambdaVolume = collagen_lambda_volume
+                cell.volumeEnergy = collagen_volume_energy
 
         # Initialise mitosis threshold. Find random tumor cell:
         tumor_cell = None
@@ -162,6 +164,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             for field in fields:
                 f = open("".join((path,"\Output_",field,str(mcs),".csv")),"w")
                 field_data = CompuCell.getConcentrationField(self.simulator, field)
+
                 for pixel in self.every_pixel():
                     x,y,z=pixel[0],pixel[1],pixel[2]
                     f.write((",".join((str(x),str(y),str(z),str(field_data.get(pixel)))))+"\n")

@@ -14,7 +14,8 @@ struct pixel_color {
 
 struct pixel_color colorscheme[] = {
 	{0,0,0},
-	{88./255, 165./255, 199./255}, {106./255, 196./255, 141./255},
+	{88./255, 165./255, 199./255}, 
+	{106./255, 196./255, 141./255},
 };
 struct pixel_color border_colorscheme[] = {
 	{0,0,0},
@@ -76,6 +77,7 @@ class grid
 						rv+= 30;
 					else
 						rv+= 60;
+
 		for (int x_i = 0; x_i < this->size[0] - 1; x_i++)
 			for (int y_i = 0; y_i < this->size[1]; y_i++) 
 				if (id_grid[x_i + y_i*this->size[1]] != id_grid[x_i + 1 + y_i*this->size[1]])
