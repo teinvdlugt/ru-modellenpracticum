@@ -45,7 +45,6 @@ for f in files:
     type_matrices.append(type_matrix)
     id_matrices.append(id_matrix)
 
-
     content += type_matrix.astype('b').tobytes()
     content += id_matrix.astype('b').tobytes()
 
