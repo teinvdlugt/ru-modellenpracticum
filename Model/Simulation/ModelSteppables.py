@@ -18,7 +18,7 @@ collagen_lambda_volume = 11.0  # from Scianna et al.
 mmp_offset = 50  # The amount of mmp constantly secreted
 
 # Steppable frequencies
-volume_steppable_frequency = 20  # The higher the cheaper computation
+growth_mitosis_steppable_frequency = 10  # The higher the cheaper computation
 mmpdegradation_steppable_frequency = 10  # mmpdegradation turns out te be extremely expensive
 OutputField_frequency = 10  # Outputs all chemical fields into a CSV file
 
@@ -46,7 +46,7 @@ def volume_to_surface3d(volume):
 
 
 class VolumeSurfaceInitialiserSteppable(SteppableBasePy):
-    def __init__(self, frequency=volume_steppable_frequency):
+    def __init__(self, frequency=1):
         SteppableBasePy.__init__(self, frequency)
 
     def start(self):
@@ -76,7 +76,7 @@ class VolumeSurfaceInitialiserSteppable(SteppableBasePy):
 
 class GrowthMitosisSteppable(MitosisSteppableBase):
     # Docs: https://pythonscriptingmanual.readthedocs.io/en/latest/mitosis.html
-    def __init__(self, frequency=10):  # Maybe change this frequency. I have set it to 10 to reduce computation
+    def __init__(self, frequency=growth_mitosis_steppable_frequency):  # Maybe change this frequency. I have set it to 10 to reduce computation
         MitosisSteppableBase.__init__(self, frequency)
         # Randomise where the 'parent' will end up and where the 'child' will end up (see docs):
         self.set_parent_child_position_flag(0)
@@ -84,7 +84,7 @@ class GrowthMitosisSteppable(MitosisSteppableBase):
     def step(self, mcs):
         # Growth
         for cell in self.cell_list_by_type(self.TUMOR):
-            cell.targetVolume += tumor_growth_rate * volume_steppable_frequency
+            cell.targetVolume += tumor_growth_rate * growth_mitosis_steppable_frequency
             cell.targetSurface = volume_to_surface(cell.targetVolume)
 
         # Mitosis
