@@ -162,10 +162,10 @@ class OutputFieldsSteppable(SteppableBasePy):
         compression_save_frequency = 10*OutputField_frequency
         if OutputField_enable:
             python_path = os.path.dirname(os.path.abspath(__file__))
-            path = python_path+"\Fields_output"
+            path = python_path+"/Fields_output"
             if not os.path.exists(path):
                 os.makedirs(path)
-            fields = ["CTP","MMP","Migration factor"]
+            fields = ["CTP"]
             number_of_fields = len(fields)
             f = []
             field_data= []
@@ -176,7 +176,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             data= np.zeros(size)
             
             for field in fields:
-                f.append(open("".join((path,"\Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
+                f.append(open("".join((path,"/Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
                 field_data.append(CompuCell.getConcentrationField(self.simulator, field))
             for i in range(0,200):
                 for j in range(0,200):
@@ -200,6 +200,6 @@ class OutputFieldsSteppable(SteppableBasePy):
                             os.remove(os.path.join(path,filename))
                     
                     compressed = zlib.compress(np.array(b"".join(uncompressed)),1)
-                    g = open("".join((path,"\Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
+                    g = open("".join((path,"/Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
                     g.write(compressed)
                     g.close()
