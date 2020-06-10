@@ -8,7 +8,7 @@ export LC_NUMERIC="C.UTF-8"
 
 # export PREFIX_CC3D=/home/kjartan/410_auto
 export PREFIX_CC3D="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export PYTHON_EXEC=/home/kjartan/anaconda3/envs/cc3d_2020/bin/python
+export PYTHON_EXEC=${PREFIX_CC3D}/Python37/bin/python
 
 cd $PREFIX_CC3D
 #export LD_LIBRARY_PATH=:$LD_LIBRARY_PATH
