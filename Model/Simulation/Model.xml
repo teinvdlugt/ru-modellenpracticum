@@ -12,7 +12,7 @@
 
     <Potts>
         <!-- Basic properties of Potts model -->
-        <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
+        <Dimensions x="400" y="400" z="1"/>   <!--FOR 2D-->
         <!--Dimensions x="200" y="200" z="200"/--> <!--FOR 3D -->
         <Steps>10000</Steps>
         <NeighborOrder>1</NeighborOrder>
@@ -30,7 +30,7 @@
     <Plugin Name="CellType">
         <!-- Listing all cell types in the simulation -->
         <CellType TypeId="0" TypeName="Medium"/>
-        <CellType Eatable="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
+        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
         <CellType TypeId="2" TypeName="Tumor"/>
     </Plugin>
 
@@ -95,16 +95,16 @@
 
         <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
 
-        <!--<DiffusionField Name="MMP">
+        <DiffusionField Name="MMP">
             <DiffusionData>
                 <FieldName>MMP</FieldName>
                 <GlobalDiffusionConstant>1.6e-03
-                </GlobalDiffusionConstant>  &lt;!&ndash;Scianna: 0.0016 (but different units?) &ndash;&gt;
+                </GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
                 <GlobalDecayConstant>2e-04</GlobalDecayConstant>
-                &lt;!&ndash; Maybe add cell-specific decay and diffusion constants? &ndash;&gt;
+                <!-- Maybe add cell-specific decay and diffusion constants? -->
             </DiffusionData>
-            &lt;!&ndash; TODO maybe add boundary conditions &ndash;&gt;
-        </DiffusionField>-->
+            <!-- TODO maybe add boundary conditions -->
+        </DiffusionField>
 
         <!-- ____________________________MIGRATION FACTOR____________________________ -->
 
@@ -152,6 +152,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing caterpillar/onecollagen_onecell.piff</PIFName>
+        <PIFName>PIF files/2d collagen2000.piff</PIFName>
     </Steppable>
 </CompuCell3D>

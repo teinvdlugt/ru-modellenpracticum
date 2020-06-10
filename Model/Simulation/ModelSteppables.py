@@ -3,20 +3,24 @@ import math
 import os
 import time
 import zlib
+import numpy as np
 
 # Toggles
 _3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
-mmp_enabled = False  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
+mmp_enabled = True  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
 growth_mitosis_enabled = True  # Handled in Model.py
 OutputField_enable = False
 
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
-tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
+tumor_growth_rate = 0.3  # per MCS -- be sure to keep this a float
 collagen_lambda_volume = 0.0  # from Scianna et al.
 collagen_volume_energy = -100.0
 mmp_offset = 50  # The amount of mmp constantly secreted
+mmp_offset_stddev = 10
+mmp_scale_factor = 5e-5  # Conversion factor from confinement energy to secretion rate
+mmp_scale_factor_stddev = 2e-5
 
 # Steppable frequencies
 growth_mitosis_steppable_frequency = 10  # The higher the cheaper computation
@@ -103,6 +107,8 @@ class GrowthMitosisSteppable(MitosisSteppableBase):
         self.parent_cell.targetVolume /= 2.0
         self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
+        self.child_cell.dict["MMP_OFFSET"] = np.random.normal(self.parent_cell.dict["MMP_OFFSET"], mmp_offset_stddev)
+        self.child_cell.dict["MMP_SCALE_FACTOR"] = np.random.normal(self.parent_cell.dict["MMP_SCALE_FACTOR"], mmp_scale_factor_stddev)
 
 
 class MMPSecretionSteppable(SecretionBasePy):
@@ -110,24 +116,28 @@ class MMPSecretionSteppable(SecretionBasePy):
     def __init__(self, frequency=1):
         SecretionBasePy.__init__(self, frequency)
 
+    def start(self):
+        for cell in self.cell_list_by_type(self.TUMOR):
+            cell.dict["MMP_OFFSET"] = np.random.normal(mmp_offset, mmp_offset_stddev)
+            cell.dict["MMP_SCALE_FACTOR"] = np.random.normal(mmp_scale_factor, mmp_scale_factor_stddev)
+
     def step(self, mcs):
         secretor = self.get_field_secretor("MMP")
-        for cell in self.cell_list:
-            if cell.type == self.TUMOR:
-                # Secretion rate depends on cell confinement
-                # Secretion rate should be increasing function of "cell.targetVolume - cell.volume" but
-                # should be 0 when  cell.targetVolume - cell.volume < 0.
+        for cell in self.cell_list_by_type(self.TUMOR):
+            # Secretion rate depends on cell confinement
+            # Secretion rate should be increasing function of "cell.targetVolume - cell.volume" but
+            # should be 0 when  cell.targetVolume - cell.volume < 0.
 
-                # The following expression is quadratic because it was inspired by the volume-energy term
-                # The surface energy contribution is commented out.
-                confinement_energy = tumor_lambda_volume * max(cell.targetVolume - cell.volume, 0) ** 2
-                # + tumor_lambda_surface * max(cell.targetSurface - cell.surface, 0) ** 2
+            # The following expression is quadratic because it was inspired by the volume-energy term
+            # The surface energy contribution is commented out.
+            confinement_energy = tumor_lambda_volume * max(cell.targetVolume - cell.volume, 0) ** 2
+            # + tumor_lambda_surface * max(cell.targetSurface - cell.surface, 0) ** 2
 
-                # Add offset and scale appropriately
-                secr_rate = (confinement_energy + mmp_offset) * 5e-5
+            # Add offset and scale appropriately
+            secr_rate = (confinement_energy + cell.dict["MMP_OFFSET"]) * cell.dict["MMP_SCALE_FACTOR"]
 
-                # MMP is secreted at secr_rate at all pixels that are neighbour of a collagen pixel.
-                secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
+            # MMP is secreted at secr_rate at all pixels that are neighbour of a collagen pixel.
+            secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
 
 
 class MMPDegradationSteppable(SteppableBasePy):
@@ -156,7 +166,7 @@ class MMPDegradationSteppable(SteppableBasePy):
 class OutputFieldsSteppable(SteppableBasePy):
     def __init__(self, frequency=OutputField_frequency):
         SteppableBasePy.__init__(self, frequency)
-    
+
     def step(self,mcs):
         start = time.time()
         compression_save_frequency = 10*OutputField_frequency
@@ -174,7 +184,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             else:
                 size = (number_of_fields,200,200,1)
             data= np.zeros(size)
-            
+
             for field in fields:
                 f.append(open("".join((path,"/Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
                 field_data.append(CompuCell.getConcentrationField(self.simulator, field))
@@ -187,8 +197,8 @@ class OutputFieldsSteppable(SteppableBasePy):
                 data[i].astype("float16").tofile(f[i])
                 f[i].close()
             print("Saving all chemical fields took %f seconds" % (time.time()-start))
-            
-            
+
+
             if (mcs+10)%compression_save_frequency == 0:
                 for field in fields:
                     uncompressed = []
@@ -198,7 +208,7 @@ class OutputFieldsSteppable(SteppableBasePy):
                             uncompressed.append(file.read())
                             file.close()
                             os.remove(os.path.join(path,filename))
-                    
+
                     compressed = zlib.compress(np.array(b"".join(uncompressed)),1)
                     g = open("".join((path,"/Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
                     g.write(compressed)
