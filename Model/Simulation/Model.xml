@@ -13,12 +13,12 @@
     <Potts>
         <!-- Basic properties of Potts model -->
         <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
-        <!--Dimensions x="200" y="200" z="200"/--> <!--FOR 3D -->
-        <Steps>10000</Steps>
+        <!--<Dimensions x="200" y="200" z="200"/>--> <!--FOR 3D -->
+        <Steps>100000</Steps>
         <NeighborOrder>1</NeighborOrder>
         <Boundary_x>Periodic</Boundary_x>
         <Boundary_y>Periodic</Boundary_y>
-        <!--Boundary_z>Periodic</Boundary_z--> <!--FOR 3D only-->
+        <!--<Boundary_z>Periodic</Boundary_z>--> <!--FOR 3D only-->
 
         <!-- The temperature, aka fluctuation amplitude: -->
         <FluctuationAmplitude>
@@ -30,7 +30,7 @@
     <Plugin Name="CellType">
         <!-- Listing all cell types in the simulation -->
         <CellType TypeId="0" TypeName="Medium"/>
-        <CellType Eatable="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
+        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
         <CellType TypeId="2" TypeName="Tumor"/>
     </Plugin>
 
@@ -152,6 +152,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing caterpillar/onecollagen_onecell.piff</PIFName>
+        <PIFName>PIF files/testing caterpillar/onecollagen_onecell_oneloosecell.piff</PIFName>
     </Steppable>
 </CompuCell3D>
