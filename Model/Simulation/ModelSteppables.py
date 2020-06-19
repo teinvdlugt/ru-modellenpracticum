@@ -6,7 +6,7 @@ import zlib
 
 # Toggles
 _3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
-mmp_enabled = False  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
+mmp_enabled = True  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
 growth_mitosis_enabled = True  # Handled in Model.py
 OutputField_enable = False
 
@@ -14,9 +14,11 @@ OutputField_enable = False
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
-collagen_lambda_volume = 0.0  # from Scianna et al.
-collagen_volume_energy = -100.0
+
+# Proteolysis parameters
 mmp_offset = 50  # The amount of mmp constantly secreted
+mmp_conversion_factor = 5e-5
+collagen_volume_energy = -100.0  # For the C++ approach
 
 # Steppable frequencies
 growth_mitosis_steppable_frequency = 10  # The higher the cheaper computation
@@ -52,28 +54,24 @@ class VolumeSurfaceInitialiserSteppable(SteppableBasePy):
 
     def start(self):
         # Initialise cell volumes
-        for cell in self.cellList:
-            if cell.type == self.TUMOR:
-                cell.targetVolume = cell.volume
-                cell.targetSurface = volume_to_surface(cell.volume)
-                cell.lambdaVolume = tumor_lambda_volume
-                cell.lambdaSurface = tumor_lambda_surface
+        for cell in self.cell_list_by_type(self.TUMOR):
+            cell.targetVolume = cell.volume
+            cell.targetSurface = volume_to_surface(cell.volume)
+            cell.lambdaVolume = tumor_lambda_volume
+            cell.lambdaSurface = tumor_lambda_surface
 
-            if cell.type == self.COLLAGEN:
-                cell.targetVolume = cell.volume
-                cell.lambdaVolume = collagen_lambda_volume
-                cell.volumeEnergy = collagen_volume_energy
+        for cell in self.cell_list_by_type(self.COLLAGEN):
+            cell.volumeEnergy = collagen_volume_energy
 
         # Initialise mitosis threshold. Find random tumor cell:
         tumor_cell = None
-        for cell in self.cell_list:
-            if cell.type == self.TUMOR:
-                tumor_cell = cell
-                break
+        for cell in self.cell_list_by_type(self.TUMOR):
+            tumor_cell = cell
+            break
         # Set mitosis threshold to twice the tumor cell size:
         global mitosis_threshold
         mitosis_threshold = tumor_cell.volume * 2
-        # This assumes that all cells have the same size!
+        # NOTE It is assumed that all cells have the same size!
 
 
 class GrowthMitosisSteppable(MitosisSteppableBase):
@@ -124,7 +122,7 @@ class MMPSecretionSteppable(SecretionBasePy):
                 # + tumor_lambda_surface * max(cell.targetSurface - cell.surface, 0) ** 2
 
                 # Add offset and scale appropriately
-                secr_rate = (confinement_energy + mmp_offset) * 5e-5
+                secr_rate = (confinement_energy + mmp_offset) * mmp_conversion_factor
 
                 # MMP is secreted at secr_rate at all pixels that are neighbour of a collagen pixel.
                 secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
@@ -156,7 +154,7 @@ class MMPDegradationSteppable(SteppableBasePy):
 class OutputFieldsSteppable(SteppableBasePy):
     def __init__(self, frequency=OutputField_frequency):
         SteppableBasePy.__init__(self, frequency)
-    
+
     def step(self,mcs):
         start = time.time()
         compression_save_frequency = 10*OutputField_frequency
@@ -174,7 +172,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             else:
                 size = (number_of_fields,200,200,1)
             data= np.zeros(size)
-            
+
             for field in fields:
                 f.append(open("".join((path,"/Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
                 field_data.append(CompuCell.getConcentrationField(self.simulator, field))
@@ -187,8 +185,8 @@ class OutputFieldsSteppable(SteppableBasePy):
                 data[i].astype("float16").tofile(f[i])
                 f[i].close()
             print("Saving all chemical fields took %f seconds" % (time.time()-start))
-            
-            
+
+
             if (mcs+10)%compression_save_frequency == 0:
                 for field in fields:
                     uncompressed = []
@@ -198,7 +196,7 @@ class OutputFieldsSteppable(SteppableBasePy):
                             uncompressed.append(file.read())
                             file.close()
                             os.remove(os.path.join(path,filename))
-                    
+
                     compressed = zlib.compress(np.array(b"".join(uncompressed)),1)
                     g = open("".join((path,"/Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
                     g.write(compressed)
