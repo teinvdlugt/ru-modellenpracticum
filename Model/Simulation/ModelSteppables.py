@@ -10,17 +10,19 @@ _3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Mod
 mmp_enabled = True  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
 growth_mitosis_enabled = True  # Handled in Model.py
 OutputField_enable = False
+leader_follower_enabled = True
 
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
-tumor_growth_rate = 0.3  # per MCS -- be sure to keep this a float
+tumor_growth_rate = 0.15  # per MCS -- be sure to keep this a float
 collagen_lambda_volume = 0.0  # from Scianna et al.
 collagen_volume_energy = -100.0
-mmp_offset = 50  # The amount of mmp constantly secreted
-mmp_offset_stddev = 10
-mmp_scale_factor = 5e-5  # Conversion factor from confinement energy to secretion rate
-mmp_scale_factor_stddev = 2e-5
+mmp_offset = 10  # The amount of mmp constantly secreted
+mmp_offset_leader = 100  # The amount of mmp constantly secreted
+mmp_scale_factor = 1e-5  # Conversion factor from confinement energy to secretion rate
+mmp_scale_factor_leader = 10e-5
+leader_percentage = 0.10 if leader_follower_enabled else 0  # Value between 0 and 1
 
 # Steppable frequencies
 growth_mitosis_steppable_frequency = 10  # The higher the cheaper computation
@@ -107,8 +109,10 @@ class GrowthMitosisSteppable(MitosisSteppableBase):
         self.parent_cell.targetVolume /= 2.0
         self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
-        self.child_cell.dict["MMP_OFFSET"] = np.random.normal(self.parent_cell.dict["MMP_OFFSET"], mmp_offset_stddev)
-        self.child_cell.dict["MMP_SCALE_FACTOR"] = np.random.normal(self.parent_cell.dict["MMP_SCALE_FACTOR"], mmp_scale_factor_stddev)
+
+        leader = np.random.random() < leader_percentage
+        self.child_cell.dict["MMP_OFFSET"] = mmp_offset_leader if leader else mmp_offset
+        self.child_cell.dict["MMP_SCALE_FACTOR"] = mmp_scale_factor_leader if leader else mmp_scale_factor
 
 
 class MMPSecretionSteppable(SecretionBasePy):
@@ -118,8 +122,10 @@ class MMPSecretionSteppable(SecretionBasePy):
 
     def start(self):
         for cell in self.cell_list_by_type(self.TUMOR):
-            cell.dict["MMP_OFFSET"] = np.random.normal(mmp_offset, mmp_offset_stddev)
-            cell.dict["MMP_SCALE_FACTOR"] = np.random.normal(mmp_scale_factor, mmp_scale_factor_stddev)
+            leader = np.random.random() < leader_percentage
+            print("leader" if leader else "follower")
+            cell.dict["MMP_OFFSET"] = mmp_offset_leader if leader else mmp_offset
+            cell.dict["MMP_SCALE_FACTOR"] = mmp_scale_factor_leader if leader else mmp_scale_factor
 
     def step(self, mcs):
         secretor = self.get_field_secretor("MMP")

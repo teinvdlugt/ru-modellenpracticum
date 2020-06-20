@@ -152,6 +152,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/2d collagen2000.piff</PIFName>
+        <PIFName>PIF files/2d collagen1000.piff</PIFName>
     </Steppable>
 </CompuCell3D>
