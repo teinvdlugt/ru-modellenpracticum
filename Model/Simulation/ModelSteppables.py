@@ -18,9 +18,9 @@ tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
 
 # Proteolysis parameters
-mmp_offset = 10  # The amount of mmp constantly secreted
+mmp_offset = 10 if leader_follower_enabled else 50  # The amount of mmp constantly secreted
 mmp_offset_leader = 100  # The amount of mmp constantly secreted
-mmp_scale_factor = 1e-5  # Conversion factor from confinement energy to secretion rate
+mmp_scale_factor = 1e-5 if leader_follower_enabled else 5e-5  # Conversion factor from confinement energy to secretion rate
 mmp_scale_factor_leader = 10e-5
 leader_percentage = 0.10 if leader_follower_enabled else 0  # Value between 0 and 1
 
