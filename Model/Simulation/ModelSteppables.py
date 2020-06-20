@@ -3,12 +3,14 @@ import math
 import os
 import time
 import zlib
+import numpy as np
 
 # Toggles
 _3d = False  # 3D toggle. To toggle 3D, set to True and change some lines in Model.xml
 mmp_enabled = True  # NOTE: also comment out MMP DiffusionField tag in XML! Rest is handled in Model.py
 growth_mitosis_enabled = True  # Handled in Model.py
 OutputField_enable = False
+leader_follower_enabled = True
 
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
@@ -16,8 +18,12 @@ tumor_lambda_surface = 2.0  # TODO what does Scianna say?
 tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
 
 # Proteolysis parameters
-mmp_offset = 50  # The amount of mmp constantly secreted
-mmp_conversion_factor = 5e-5
+mmp_offset = 10  # The amount of mmp constantly secreted
+mmp_offset_leader = 100  # The amount of mmp constantly secreted
+mmp_scale_factor = 1e-5  # Conversion factor from confinement energy to secretion rate
+mmp_scale_factor_leader = 10e-5
+leader_percentage = 0.10 if leader_follower_enabled else 0  # Value between 0 and 1
+
 collagen_volume_energy = -100.0  # For the C++ approach
 
 # Steppable frequencies
@@ -102,30 +108,40 @@ class GrowthMitosisSteppable(MitosisSteppableBase):
         self.parent_cell.targetSurface = volume_to_surface(self.parent_cell.targetVolume)
         self.clone_parent_2_child()  # Copy parent cell parameters to daughter cell
 
+        leader = np.random.random() < leader_percentage
+        self.child_cell.dict["MMP_OFFSET"] = mmp_offset_leader if leader else mmp_offset
+        self.child_cell.dict["MMP_SCALE_FACTOR"] = mmp_scale_factor_leader if leader else mmp_scale_factor
+
 
 class MMPSecretionSteppable(SecretionBasePy):
     # Docs: https://compucell3dreferencemanual.readthedocs.io/en/latest/secretion.html
     def __init__(self, frequency=1):
         SecretionBasePy.__init__(self, frequency)
 
+    def start(self):
+        for cell in self.cell_list_by_type(self.TUMOR):
+            leader = np.random.random() < leader_percentage
+            print("leader" if leader else "follower")
+            cell.dict["MMP_OFFSET"] = mmp_offset_leader if leader else mmp_offset
+            cell.dict["MMP_SCALE_FACTOR"] = mmp_scale_factor_leader if leader else mmp_scale_factor
+
     def step(self, mcs):
         secretor = self.get_field_secretor("MMP")
-        for cell in self.cell_list:
-            if cell.type == self.TUMOR:
-                # Secretion rate depends on cell confinement
-                # Secretion rate should be increasing function of "cell.targetVolume - cell.volume" but
-                # should be 0 when  cell.targetVolume - cell.volume < 0.
+        for cell in self.cell_list_by_type(self.TUMOR):
+            # Secretion rate depends on cell confinement
+            # Secretion rate should be increasing function of "cell.targetVolume - cell.volume" but
+            # should be 0 when  cell.targetVolume - cell.volume < 0.
 
-                # The following expression is quadratic because it was inspired by the volume-energy term
-                # The surface energy contribution is commented out.
-                confinement_energy = tumor_lambda_volume * max(cell.targetVolume - cell.volume, 0) ** 2
-                # + tumor_lambda_surface * max(cell.targetSurface - cell.surface, 0) ** 2
+            # The following expression is quadratic because it was inspired by the volume-energy term
+            # The surface energy contribution is commented out.
+            confinement_energy = tumor_lambda_volume * max(cell.targetVolume - cell.volume, 0) ** 2
+            # + tumor_lambda_surface * max(cell.targetSurface - cell.surface, 0) ** 2
 
-                # Add offset and scale appropriately
-                secr_rate = (confinement_energy + mmp_offset) * mmp_conversion_factor
+            # Add offset and scale appropriately
+            secr_rate = (confinement_energy + cell.dict["MMP_OFFSET"]) * cell.dict["MMP_SCALE_FACTOR"]
 
-                # MMP is secreted at secr_rate at all pixels that are neighbour of a collagen pixel.
-                secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
+            # MMP is secreted at secr_rate at all pixels that are neighbour of a collagen pixel.
+            secretor.secreteOutsideCellAtBoundaryOnContactWith(cell, secr_rate, [self.COLLAGEN])
 
 
 class MMPDegradationSteppable(SteppableBasePy):
