@@ -12,13 +12,13 @@
 
     <Potts>
         <!-- Basic properties of Potts model -->
-        <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
+        <Dimensions x="400" y="400" z="1"/>   <!--FOR 2D-->
         <!--Dimensions x="200" y="200" z="200"/--> <!--FOR 3D -->
-        <Steps>10000</Steps>
+        <Steps>100000</Steps>
         <NeighborOrder>1</NeighborOrder>
         <Boundary_x>Periodic</Boundary_x>
         <Boundary_y>Periodic</Boundary_y>
-        <!--Boundary_z>Periodic</Boundary_z--> <!--FOR 3D only-->
+        <!--<Boundary_z>Periodic</Boundary_z>--> <!--FOR 3D only-->
 
         <!-- The temperature, aka fluctuation amplitude: -->
         <FluctuationAmplitude>
@@ -30,7 +30,7 @@
     <Plugin Name="CellType">
         <!-- Listing all cell types in the simulation -->
         <CellType TypeId="0" TypeName="Medium"/>
-        <CellType Eatable="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
+        <CellType Freeze="" TypeId="1" TypeName="Collagen"/> <!-- add Freeze="" to disable proteolysis -->
         <CellType TypeId="2" TypeName="Tumor"/>
     </Plugin>
 
@@ -77,11 +77,11 @@
 
                 <DoNotDiffuseTo>Collagen</DoNotDiffuseTo>
                 <DiffusionCoefficient CellType="Collagen">0.00</DiffusionCoefficient>
-                <DiffusionCoefficient CellType="Tumor">5e-04</DiffusionCoefficient>
+                <DiffusionCoefficient CellType="Tumor">4e-04</DiffusionCoefficient>
                 <DiffusionCoefficient CellType="Medium">0.00</DiffusionCoefficient>
 
                 <DecayCoefficient CellType="Collagen">0.005</DecayCoefficient>
-                <DecayCoefficient CellType="Tumor">0.0005</DecayCoefficient> <!-- ? -->
+                <DecayCoefficient CellType="Tumor">0.001</DecayCoefficient>
                 <DecayCoefficient CellType="Medium">0.02</DecayCoefficient>
 
                 <!--DoNotDecayIn>Tumor</DoNotDecayIn>
@@ -95,16 +95,15 @@
 
         <!-- ____________________________PROTEOLYSIS (MMP FIELD)____________________________ -->
 
-        <!--<DiffusionField Name="MMP">
+        <DiffusionField Name="MMP">
             <DiffusionData>
                 <FieldName>MMP</FieldName>
                 <GlobalDiffusionConstant>1.6e-03
-                </GlobalDiffusionConstant>  &lt;!&ndash;Scianna: 0.0016 (but different units?) &ndash;&gt;
+                </GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
                 <GlobalDecayConstant>2e-04</GlobalDecayConstant>
-                &lt;!&ndash; Maybe add cell-specific decay and diffusion constants? &ndash;&gt;
+                <!-- Maybe add cell-specific decay and diffusion constants? -->
             </DiffusionData>
-            &lt;!&ndash; TODO maybe add boundary conditions &ndash;&gt;
-        </DiffusionField>-->
+        </DiffusionField>
 
         <!-- ____________________________MIGRATION FACTOR____________________________ -->
 
@@ -139,7 +138,6 @@
                     <Periodic/>
                     &lt;!&ndash; <ConstantValue PlanePosition="Min" Value="10.0"/> &ndash;&gt;
                 </Plane>
-                &lt;!&ndash;TODO add Z direction as well (for 3D). But what's the point of boundary conds?&ndash;&gt;
             </BoundaryConditions>
         </DiffusionField>-->
     </Steppable>
@@ -152,6 +150,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing caterpillar/onecollagen_onecell.piff</PIFName>
+        <PIFName>PIF files/collagen homogeneous density/2d collagen1500.piff</PIFName>
     </Steppable>
 </CompuCell3D>

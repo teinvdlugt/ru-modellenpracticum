@@ -3,7 +3,7 @@
    <Metadata>
       
       <!-- Basic properties simulation -->
-      <NumberOfProcessors>4</NumberOfProcessors>
+      <NumberOfProcessors>1</NumberOfProcessors>
       <DebugOutputFrequency>10</DebugOutputFrequency>
       <!-- <NonParallelModule Name="Potts"/> -->
    </Metadata>
@@ -40,7 +40,7 @@
    <Steppable Type="PIFInitializer">
    
    <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
-   <PIFName>pifdump00.piff</PIFName>
+   <PIFName>3d_onesurface_onecell_200x200x80.piff</PIFName>
 </Steppable>
 
    
