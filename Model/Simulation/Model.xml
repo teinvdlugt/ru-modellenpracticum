@@ -12,7 +12,7 @@
 
     <Potts>
         <!-- Basic properties of Potts model -->
-        <Dimensions x="400" y="400" z="1"/>   <!--FOR 2D-->
+        <Dimensions x="200" y="200" z="200"/>   <!--FOR 2D-->
         <!--Dimensions x="200" y="200" z="200"/--> <!--FOR 3D -->
         <Steps>100000</Steps>
         <NeighborOrder>1</NeighborOrder>
@@ -150,6 +150,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/collagen homogeneous density/2d collagen1500.piff</PIFName>
+        <PIFName>PIF files/3D homogeneous collagen fibres/3d collagen36000.piff</PIFName>
     </Steppable>
 </CompuCell3D>

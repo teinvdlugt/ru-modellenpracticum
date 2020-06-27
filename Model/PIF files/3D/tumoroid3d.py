@@ -7,7 +7,7 @@ cluster_radius = 24
 cluster_center = 100
 cell_width = 8  # cell_width^3 pixels per cell
 file_input = './collagen3d.piff'
-file_output = './collagen+tumoroid3d.piff'
+file_output = './collagen+tumoroid3d poresize4.piff'
 
 # Copy collagen file
 shutil.copyfile(file_input, file_output)

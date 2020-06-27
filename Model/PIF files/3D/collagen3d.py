@@ -2,7 +2,7 @@ output_file = "./collagen3d.piff"
 lattice_dim = 200  # no of lattice sites in each direction
 lower_bound = 40  # Draw collagen from lower_bound to upper_bound in each direction (both inclusive)
 upper_bound = 160
-pore_size = 15
+pore_size = 4
 
 # See https://compucell3dreferencemanual.readthedocs.io/en/latest/pif_initializer.html#pif-initializer
 # for PIF file structure:

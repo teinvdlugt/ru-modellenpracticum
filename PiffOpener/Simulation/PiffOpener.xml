@@ -1,48 +1,48 @@
 <CompuCell3D Revision="20200418" Version="4.2.0">
-   
+
    <Metadata>
-      
+
       <!-- Basic properties simulation -->
       <NumberOfProcessors>1</NumberOfProcessors>
       <DebugOutputFrequency>10</DebugOutputFrequency>
       <!-- <NonParallelModule Name="Potts"/> -->
    </Metadata>
-   
+
    <!-- Make sure that when you want to change the orientation of a screenshot or the the lattice size, you,
         1. delete the screenshot_data folder
         2. Set all variable such as lattice dimensions and PIFName correctly
         3. Start the simulation in compucell and orient the graph in the way you want your screenshots
         4. Restart the simulation. As long as don't change the lattice dimensions, cell types or orientation you can
            change the PIFName to the next file you want to convert into a screenshot immediately and rerun
-           the simulation without having to go through steps 1-3. The destination folder is set in the CompuCell 
+           the simulation without having to go through steps 1-3. The destination folder is set in the CompuCell
            player in Tools -> Configuration -> Workspace dir. -->
-   
+
    <Potts>
-      
+
       <!-- Basic properties of CPM (GGH) algorithm -->
-      <Dimensions x="100" y="100" z="100"/> <!-- Make sure to set these correctly! -->
+      <Dimensions x="200" y="200" z="200"/> <!-- Make sure to set these correctly! -->
       <Steps>10</Steps>
       <Temperature>10.0</Temperature>
       <NeighborOrder>1</NeighborOrder>
    </Potts>
-   
+
    <Plugin Name="CellType">
-      
+
       <!-- Listing all cell types in the simulation -->
       <CellType TypeId="0" TypeName="Medium"/>
       <CellType Freeze="" TypeId="1" TypeName="Collagen"/>
       <CellType Freeze="" TypeId="2" TypeName="Tumor"/>
       <CellType Freeze="" TypeId="3" TypeName="Condensing"/>
-      <CellType Freeze="" TypeId="4" TypeName="NonCondensing"/>      
+      <CellType Freeze="" TypeId="4" TypeName="NonCondensing"/>
    </Plugin>
-   
-      
+
+
    <Steppable Type="PIFInitializer">
-   
+
    <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
-   <PIFName>3d_onesurface_onecell_200x200x80.piff</PIFName>
+   <PIFName>collagen+tumoroid3d poresize4.piff</PIFName>
 </Steppable>
 
-   
-   
+
+
 </CompuCell3D>
