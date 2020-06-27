@@ -217,6 +217,6 @@ class OutputFieldsSteppable(SteppableBasePy):
                             os.remove(os.path.join(path,filename))
 
                     compressed = zlib.compress(np.array(b"".join(uncompressed)),1)
-                    g = open("".join((path,"/Output_",field,"{:04d}".format(mcs+10-compression_save_frequency),".txt")),"wb")
+                    g = open("".join((path,"/Output_",field,"{:04d}".format(mcs+OutputField_frequency-compression_save_frequency),".txt")),"wb")
                     g.write(compressed)
                     g.close()
