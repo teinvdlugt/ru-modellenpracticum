@@ -31,6 +31,11 @@ growth_mitosis_steppable_frequency = 10  # The higher the cheaper computation
 mmpdegradation_steppable_frequency = 10  # mmpdegradation turns out te be extremely expensive
 OutputField_frequency = 10  # Outputs all chemical fields into a CSV file
 
+# OutputField parameters
+lattice_size = [200,200,200]
+fields = ["CTP"]
+compression_save_frequency = 10*OutputField_frequency
+
 
 # To increase speed, consider changing every call to this function to the appropriate function (2d or 3d)
 def volume_to_surface(volume):
@@ -173,28 +178,26 @@ class OutputFieldsSteppable(SteppableBasePy):
 
     def step(self,mcs):
         start = time.time()
-        compression_save_frequency = 10*OutputField_frequency
         if OutputField_enable:
             python_path = os.path.dirname(os.path.abspath(__file__))
             path = python_path+"/Fields_output"
             if not os.path.exists(path):
                 os.makedirs(path)
-            fields = ["CTP"]
             number_of_fields = len(fields)
             f = []
             field_data= []
             if _3d:
-                size = (number_of_fields,200,200,200)
+                size = (number_of_fields,latticesize[0],latticesize[1],latticesize[2])
             else:
-                size = (number_of_fields,200,200,1)
+                size = (number_of_fields,latticesize[0],latticesize[1],1)
             data= np.zeros(size)
 
             for field in fields:
                 f.append(open("".join((path,"/Output_",field,"{:04d}".format(mcs),"unc",".txt")),"wb"))
                 field_data.append(CompuCell.getConcentrationField(self.simulator, field))
-            for i in range(0,200):
-                for j in range(0,200):
-                    for k in range (0,size[-1]):
+            for i in range(0,size[1]):
+                for j in range(0,size[2]):
+                    for k in range (0,size[3]):
                        for l in range (0,number_of_fields):
                            data[l,i,j,k] = field_data[l][i,j,k]
             for i in range(0,number_of_fields):
@@ -203,7 +206,7 @@ class OutputFieldsSteppable(SteppableBasePy):
             print("Saving all chemical fields took %f seconds" % (time.time()-start))
 
 
-            if (mcs+10)%compression_save_frequency == 0:
+            if (mcs+OutputField_frequency)%compression_save_frequency == 0:
                 for field in fields:
                     uncompressed = []
                     for filename in sorted(os.listdir(path)):
