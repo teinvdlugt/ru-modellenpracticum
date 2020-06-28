@@ -12,7 +12,7 @@
 
     <Potts>
         <!-- Basic properties of Potts model -->
-        <Dimensions x="200" y="200" z="200"/>   <!--FOR 2D-->
+        <Dimensions x="200" y="200" z="1"/>   <!--FOR 2D-->
         <!--Dimensions x="200" y="200" z="200"/--> <!--FOR 3D -->
         <Steps>100000</Steps>
         <NeighborOrder>1</NeighborOrder>
@@ -100,7 +100,7 @@
                 <FieldName>MMP</FieldName>
                 <GlobalDiffusionConstant>1.6e-03
                 </GlobalDiffusionConstant>  <!--Scianna: 0.0016 (but different units?) -->
-                <GlobalDecayConstant>2e-04</GlobalDecayConstant>
+                <GlobalDecayConstant>7e-03</GlobalDecayConstant>
                 <!-- Maybe add cell-specific decay and diffusion constants? -->
             </DiffusionData>
         </DiffusionField>
@@ -150,6 +150,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/3D homogeneous collagen fibres/3d collagen36000.piff</PIFName>
+        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
     </Steppable>
 </CompuCell3D>

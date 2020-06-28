@@ -38,11 +38,8 @@
 
 
    <Steppable Type="PIFInitializer">
-
-   <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
-   <PIFName>collagen+tumoroid3d poresize4.piff</PIFName>
-</Steppable>
-
-
+      <!-- Initial layout of cells using PIFF file. Piff files can be generated using PIFGEnerator -->
+      <PIFName>collagen+tumoroid3d poresize4.piff</PIFName>
+   </Steppable>
 
 </CompuCell3D>
