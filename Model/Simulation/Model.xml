@@ -150,6 +150,6 @@
 
     <Steppable Type="PIFInitializer">
         <!-- Initial layout of cells using PIFF file. -->
-        <PIFName>PIF files/testing proteolysis/cell_in_box.piff</PIFName>
+        <PIFName>PIF files/testing caterpillar/onecollagen_onecell.piff</PIFName>
     </Steppable>
 </CompuCell3D>

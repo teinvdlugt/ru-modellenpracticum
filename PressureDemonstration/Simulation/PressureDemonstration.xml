@@ -11,7 +11,7 @@
         <!-- Basic properties of CPM (GGH) algorithm -->
         <Dimensions x="50" y="50" z="1"/>
         <Steps>10000</Steps>
-        <Temperature>1</Temperature>
+        <Temperature>2</Temperature>
         <NeighborOrder>1</NeighborOrder>
     </Potts>
 
@@ -20,12 +20,8 @@
         <Energy Type1="Upper" Type2="Upper">1</Energy>
         <NeighborOrder>4</NeighborOrder>
     </Plugin>
-    
-    <Plugin Name="Surface">
-        <SurfaceEnergyParameters CellType="Lower" LambdaSurface="0" TargetSurface="40"/>
-        <SurfaceEnergyParameters CellType="Upper" LambdaSurface="0" TargetSurface="40"/>
-    </Plugin>
 
+    <Plugin Name="Surface" />
 
     <Plugin Name="CellType">
         <!-- Listing all cell types in the simulation -->
