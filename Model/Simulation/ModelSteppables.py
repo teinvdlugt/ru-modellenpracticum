@@ -15,7 +15,7 @@ leader_follower_enabled = True
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
-tumor_growth_rate = 0.1  # per MCS -- be sure to keep this a float
+tumor_growth_rate = 0.1 if (not _3d) else 0.8  # per MCS -- be sure to keep this a float. Growth rate in 3D should be higher for comparable effect
 
 # Proteolysis parameters
 mmp_offset = 10 if leader_follower_enabled else 50  # The amount of mmp constantly secreted
