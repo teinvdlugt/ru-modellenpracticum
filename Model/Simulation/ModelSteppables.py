@@ -187,9 +187,9 @@ class OutputFieldsSteppable(SteppableBasePy):
             f = []
             field_data= []
             if _3d:
-                size = (number_of_fields,latticesize[0],latticesize[1],latticesize[2])
+                size = (number_of_fields,lattice_size[0],lattice_size[1],lattice_size[2])
             else:
-                size = (number_of_fields,latticesize[0],latticesize[1],1)
+                size = (number_of_fields,lattice_size[0],lattice_size[1],1)
             data= np.zeros(size)
 
             for field in fields:
