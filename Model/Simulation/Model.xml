@@ -89,7 +89,7 @@
             </DiffusionData>
 
             <SecretionData>
-                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.03</SecretionOnContact>
+                <SecretionOnContact Type="Tumor" SecreteOnContactWith="Collagen">0.01</SecretionOnContact>
             </SecretionData>
         </DiffusionField>
 
