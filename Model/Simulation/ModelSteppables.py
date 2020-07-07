@@ -15,16 +15,16 @@ leader_follower_enabled = True
 # Volume, surface, growth and mitosis parameters
 tumor_lambda_volume = 10.0  # from Scianna et al.
 tumor_lambda_surface = 2.0  # TODO what does Scianna say?
-tumor_growth_rate = 0.1 if (not _3d) else 0.8  # per MCS -- be sure to keep this a float. Growth rate in 3D should be higher for comparable effect
+tumor_growth_rate = 0.05 if (not _3d) else 0.4  # per MCS -- be sure to keep this a float. Growth rate in 3D should be higher for comparable effect
 
 # Proteolysis parameters
-mmp_offset = 10 if leader_follower_enabled else 50  # The amount of mmp constantly secreted
+mmp_offset = 5 if leader_follower_enabled else 50  # The amount of mmp constantly secreted
 mmp_offset_leader = 100  # The amount of mmp constantly secreted
-mmp_scale_factor = 1e-5 if leader_follower_enabled else 5e-5  # Conversion factor from confinement energy to secretion rate
+mmp_scale_factor = 0.5e-5 if leader_follower_enabled else 5e-5  # Conversion factor from confinement energy to secretion rate
 mmp_scale_factor_leader = 10e-5
 leader_percentage = 0.10 if leader_follower_enabled else 0  # Value between 0 and 1
 
-collagen_volume_energy = -100.0  # For the C++ approach
+collagen_volume_energy = -135.0  # For the VE approach
 
 # Steppable frequencies
 growth_mitosis_steppable_frequency = 10  # The higher the cheaper computation
